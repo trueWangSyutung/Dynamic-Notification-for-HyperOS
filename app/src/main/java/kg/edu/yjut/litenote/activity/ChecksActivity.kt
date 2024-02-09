@@ -218,7 +218,8 @@ class ChecksActivity : ComponentActivity() {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                Text(
-                                        text = "欢迎使用 LiteNote(取件码)",
+                                        text = "" +
+                                                "",
                                         fontSize = 20.sp
                                     )
                             }

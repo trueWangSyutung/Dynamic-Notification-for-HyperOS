@@ -347,11 +347,11 @@ class GuardNotificationListenerService : NotificationListenerService() {
         var intent = Intent(this, MainActivity::class.java)
         var pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_MUTABLE)
         var notification: Notification = NotificationCompat.Builder(this, id)
-            .setContentTitle("取件码通知监听服务正在启动")
-            .setContentText("取件码通知监听服务正在启动，点击进入应用")
+            .setContentTitle("通知监听服务正在启动")
+            .setContentText("通知监听服务正在启动，点击进入应用")
             .setWhen(System.currentTimeMillis())
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
+            .setSmallIcon(R.mipmap.ic_kuaidi)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_kuaidi))
             .setContentIntent(pendingIntent)
             .build()
 
@@ -374,7 +374,7 @@ class GuardNotificationListenerService : NotificationListenerService() {
         // 显示通知
         startForeground(notificationId, notification1)
         MiuiStringToast.showStringToast(this,  ToastConfig(
-            "取件码通知监听服务正在启动",
+            "通知监听服务正在启动",
             "#1296DB",
             "dd",
             4000L,
