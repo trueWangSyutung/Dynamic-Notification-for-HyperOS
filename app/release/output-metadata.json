@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "kg.edu.yjut.enhancenoticehyperos",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 10000,
+      "versionName": "2.0.0 alpha",
+      "outputFile": "app-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
