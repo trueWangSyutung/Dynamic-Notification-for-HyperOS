@@ -50,7 +50,7 @@ var supportList = listOf<ActionInfo>(
             "mipush", "小米推送"
         ),
     )),
-    ActionInfo("cn.zhihu.android", "ChannelActivity", "将知乎消息通知通过“舞台动效”提醒您。", listOf(
+    ActionInfo("com.zhihu.android", "ChannelActivity", "将知乎消息通知通过“舞台动效”提醒您。", listOf(
         ChannelInfo(
             "mipush", "小米推送"
         ),
@@ -66,7 +66,7 @@ var supposedPackageName = arrayOf(
     "com.sina.weibo",
     "com.xingin.xhs",
     "cn.xuexi.android",
-    "cn.zhihu.android",
+    "com.zhihu.android",
 )
 var supposedIconMap = mapOf(
     "com.tencent.mm" to "wechat",
@@ -77,7 +77,7 @@ var supposedIconMap = mapOf(
     "com.sina.weibo" to "weibo",
     "com.xingin.xhs" to "xhs",
     "cn.xuexi.android" to "xuexi",
-    "cn.zhihu.android" to "zhihu",
+    "com.zhihu.android" to "zhihu",
 )
 var suppsedColorStr = mapOf(
     "com.tencent.mm" to "#058B0E",
@@ -88,7 +88,7 @@ var suppsedColorStr = mapOf(
     "com.sina.weibo" to "#FFFFFF",
     "com.xingin.xhs" to "#FFFFFF",
     "cn.xuexi.android" to "#D81E06",
-    "cn.zhihu.android" to "#1296db",
+    "com.zhihu.android" to "#1296db",
 )
 var supposedDuration = mapOf(
     "com.tencent.mm" to 6000L,
@@ -99,7 +99,7 @@ var supposedDuration = mapOf(
     "com.sina.weibo" to 5000L,
     "com.xingin.xhs" to 5000L,
     "cn.xuexi.android" to 5000L,
-    "cn.zhihu.android" to 5000L,
+    "com.zhihu.android" to 5000L,
 )
 
 fun getIcons(str:String) : Int{
