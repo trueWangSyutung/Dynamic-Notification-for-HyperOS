@@ -28,6 +28,11 @@ import kg.edu.yjut.litenote.miuiStringToast.MiuiStringToast
 import kg.edu.yjut.litenote.miuiStringToast.ToastConfig
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import kg.edu.yjut.litenote.utils.MyStoreTools
+import kg.edu.yjut.litenote.utils.getIcons
+import kg.edu.yjut.litenote.utils.supposedDuration
+import kg.edu.yjut.litenote.utils.supposedIconMap
+import kg.edu.yjut.litenote.utils.supposedPackageName
+import kg.edu.yjut.litenote.utils.suppsedColorStr
 import java.util.Calendar
 import kotlin.random.Random
 
@@ -52,30 +57,7 @@ class GuardNotificationListenerService : NotificationListenerService() {
         super.onListenerDisconnected()
     }
 
-    var supposedPackageName = arrayOf(
-        "com.tencent.mm",
-        "com.ss.android.ugc.aweme",
-        "com.android.email",
-        "com.tencent.mobileqq"
-    )
-    var supposedIconMap = mapOf(
-        "com.tencent.mm" to "wechat",
-        "com.ss.android.ugc.aweme" to "dy",
-        "com.android.email" to "vpn",
-        "com.tencent.mobileqq" to "qq"
-    )
-    var suppsedColorStr = mapOf(
-        "com.tencent.mm" to "#058B0E",
-        "com.ss.android.ugc.aweme" to "#FFFFFF",
-        "com.android.email" to "#91C8E4",
-        "com.tencent.mobileqq" to "#1296DB"
-    )
-    var supposedDuration = mapOf(
-        "com.tencent.mm" to 6000L,
-        "com.ss.android.ugc.aweme" to 4000L,
-        "com.android.email" to 4000L,
-        "com.tencent.mobileqq" to 6000L
-    )
+
     @SuppressLint("WrongConstant")
     private fun getMsg(sbn: StatusBarNotification): Array<String> {
         val extras = sbn.notification.extras
@@ -198,9 +180,13 @@ class GuardNotificationListenerService : NotificationListenerService() {
         }
         else{
             // 如果在 supposedPackageName 中能找到
-            // 则说明是其他应用的通知
+            // 则说明是其他应用的通知 supposedPackageName.contains(packageName)
+
             if (supposedPackageName.contains(packageName)) {
                 var action = sp_action.getBoolean(packageName, true)
+                // 获取应用信息
+
+
                 if (action) {
                     println(extras.toString())
                     if (extras != null) {
@@ -220,6 +206,8 @@ class GuardNotificationListenerService : NotificationListenerService() {
                         }
 
 
+
+
                         var channelOpen = sp_action.getBoolean("${packageName}_${channel}", true)
                         if (channelOpen) {
                             // 获取通知时间
@@ -233,12 +221,29 @@ class GuardNotificationListenerService : NotificationListenerService() {
                             // 如果是横屏
                             if (isLandscape) {
                                 // 发送横屏通知,横屏通知不可以使用，灵动岛
-                                PostNotice(
-                                    title!!,
-                                    content!!,
-                                    intent,
-                                    supposedIconMap[packageName]!!
-                                )
+                                // 检查 是否是 平板
+                                var isPad = MyStoreTools.isPad(this)
+
+                                if (isPad) {
+                                    MiuiStringToast.showStringToast(
+                                        this, ToastConfig(
+                                            "${title} : ${content}",
+                                            suppsedColorStr[packageName]!!,
+                                            supposedIconMap[packageName]!!,
+                                            supposedDuration[packageName]!!,
+                                            intent
+                                        )
+                                    )
+                                }else{
+                                    PostNotice(
+                                        title!!,
+                                        content!!,
+                                        intent,
+                                        supposedIconMap[packageName]!!
+                                    )
+                                }
+
+
 
                             } else {
                                 // 发送竖屏通知，竖屏可以使用，灵动岛
@@ -278,17 +283,7 @@ class GuardNotificationListenerService : NotificationListenerService() {
 
         return Array(0, {""})
     }
-    fun getIcons(str:String) : Int{
-        var icon = when(str){
-            "dy" -> R.drawable.dy
-            "wechat" -> R.drawable.wechat
-            "vpn" -> R.drawable.vpn
-            "qq" -> R.drawable.qq
-            "logo" -> R.drawable.dd
-            else -> R.mipmap.ic_launcher
-        }
-        return icon
-    }
+
 
     // 发送焦点通知，告诉用户有新的快递需要取
     @SuppressLint("ObsoleteSdkInt")

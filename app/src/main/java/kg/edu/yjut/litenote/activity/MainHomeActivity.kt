@@ -56,6 +56,7 @@ import kg.edu.yjut.litenote.bean.AppInfo
 import kg.edu.yjut.litenote.bean.ChannelInfo
 import kg.edu.yjut.litenote.bean.ShowActionInfo
 import kg.edu.yjut.litenote.utils.MyStoreTools
+import kg.edu.yjut.litenote.utils.supportList
 
 @Composable
 @Preview
@@ -107,36 +108,6 @@ fun LoadingView() {
 
 class MainHomeActivity : ComponentActivity() {
 
-    var supportList = listOf<ActionInfo>(
-        ActionInfo("com.android.mms", "MyHomeActivity", "自动识别短信中的快递取件码短信，通过“舞台动效”提醒您。", listOf()),
-        ActionInfo("com.tencent.mm", "ChannelActivity", "将微信消息通知通过“舞台动效”提醒您。", listOf(
-            ChannelInfo(
-                "message_channel_new_id", "新消息"
-            ),
-            ChannelInfo(
-                "voip_norify_channel_silent1704436236834","音视频消息"
-            ),
-        )),
-        ActionInfo("com.ss.android.ugc.aweme", "ChannelActivity", "将抖音消息通知通过“舞台动效”提醒您。", listOf(
-            ChannelInfo(
-                "mipush", "小米推送"
-            ),
-
-        )),
-        ActionInfo("com.android.email", "ChannelActivity", "将邮件消息通知通过“舞台动效”提醒您。", listOf(
-            ChannelInfo(
-                "mipush", "小米推送"
-            ),
-        )),
-        ActionInfo("com.tencent.mobileqq", "ChannelActivity", "将QQ消息通知通过“舞台动效”提醒您。", listOf(
-            ChannelInfo(
-                "mipush", "小米推送"
-            ),
-        )),
-
-
-    )
-
 
 
     @SuppressLint("QueryPermissionsNeeded")
@@ -156,7 +127,7 @@ class MainHomeActivity : ComponentActivity() {
                     pkg,
                     info.applicationInfo.loadIcon(context.packageManager)
 
-                )
+                    )
                 )
             }
         } catch (t: Throwable) {

@@ -494,7 +494,10 @@ class MyHomeActivity : ComponentActivity() {
                         } else {
                             // 设置
                             Column(
-                                modifier = Modifier.padding(20.dp, 120.dp, 20.dp, 100.dp)
+                                modifier = Modifier.padding(20.dp, 120.dp, 20.dp, 100.dp).verticalScroll(
+                                    rememberScrollState()
+                                ),
+
                             ) {
                                 Text(
                                     text = "设置",

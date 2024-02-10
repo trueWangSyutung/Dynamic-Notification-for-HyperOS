@@ -48,4 +48,8 @@ object MyStoreTools {
     }
 
 
+    fun isPad(context: Context): Boolean {
+        return context.resources.configuration.smallestScreenWidthDp >= 600
+    }
+
 }
