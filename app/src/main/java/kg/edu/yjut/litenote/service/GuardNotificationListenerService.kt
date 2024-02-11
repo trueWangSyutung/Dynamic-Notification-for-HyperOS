@@ -29,6 +29,7 @@ import kg.edu.yjut.litenote.miuiStringToast.ToastConfig
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import kg.edu.yjut.litenote.utils.MyStoreTools
 import kg.edu.yjut.litenote.utils.getIcons
+import kg.edu.yjut.litenote.utils.getSystemPackages
 import kg.edu.yjut.litenote.utils.supposedDuration
 import kg.edu.yjut.litenote.utils.supposedIconMap
 import kg.edu.yjut.litenote.utils.supposedPackageName
@@ -39,6 +40,7 @@ import kotlin.random.Random
 
 class GuardNotificationListenerService : NotificationListenerService() {
     val TAG = GuardNotificationListenerService::class.java.simpleName
+    var syatemApplicationsPackageName = ArrayList<String>()
 
     override fun onBind(intent: Intent?): IBinder? {
         return super.onBind(intent)
@@ -185,14 +187,27 @@ class GuardNotificationListenerService : NotificationListenerService() {
             if (supposedPackageName.contains(packageName)) {
                 var action = sp_action.getBoolean(packageName, true)
                 // 获取应用信息
-
-
                 if (action) {
                     println(extras.toString())
                     if (extras != null) {
-                        val title = extras.getString("android.title")
-                        val content = extras.getString("android.text")
-                        val intent = sbn.notification.contentIntent
+                        var title = extras.getString("android.title")
+                        var content = extras.getString("android.text")
+                        var app = packageManager.getApplicationInfo(packageName, 0)
+
+                        if (title == null) {
+                            title = app.loadLabel(packageManager).toString()
+                        }
+                        if (content == null) {
+                            content = "发来一条消息"
+                        }
+                        var intent = sbn.notification.contentIntent
+                        // 获取通道
+                        if (intent == null) {
+                            // 打开应用  packageName
+                            intent = PendingIntent.getActivity(this, 0, packageManager.getLaunchIntentForPackage(packageName),
+                                PendingIntent.FLAG_IMMUTABLE)
+
+                        }
                         // 获取通道
                         val channel = sbn.notification.channelId
 
@@ -204,10 +219,7 @@ class GuardNotificationListenerService : NotificationListenerService() {
                             MyStoreTools.addChannel(this, packageName, ChannelInfo(channel, channel))
 
                         }
-
-
-
-
+                        // 获取通道是否开启
                         var channelOpen = sp_action.getBoolean("${packageName}_${channel}", true)
                         if (channelOpen) {
                             // 获取通知时间
@@ -269,9 +281,109 @@ class GuardNotificationListenerService : NotificationListenerService() {
                     Log.d(TAG, "功能已关闭")
                 }
             }
-            else{
-                Log.d(TAG, "暂未支持此应用")
+            else {
+                // 如果在 syatemApplicationsPackageName 中能找到
+                if (syatemApplicationsPackageName.contains(packageName)) {
+                    Log.d(TAG, "暂未支持此应用")
+                    return  Array(0, {""})
+                }
 
+
+
+                var action = sp_action.getBoolean(packageName, true)
+                // 获取应用信息
+                if (action) {
+                    println(extras.toString())
+                    if (extras != null) {
+                        var title = extras.getString("android.title")
+                        var content = extras.getString("android.text")
+                        var app = packageManager.getApplicationInfo(packageName, 0)
+
+                        if (title == null) {
+                            title = app.loadLabel(packageManager).toString()
+                        }
+                        if (content == null) {
+                            content = "发来一条消息"
+                        }
+                        var intent = sbn.notification.contentIntent
+                        // 获取通道
+                        if (intent == null) {
+                            // 打开应用  packageName
+                            intent = PendingIntent.getActivity(this, 0, packageManager.getLaunchIntentForPackage(packageName),
+                                PendingIntent.FLAG_IMMUTABLE)
+
+                        }
+
+                        val channel = sbn.notification.channelId
+
+                        // 检查通道是否存在
+                        var isExist = MyStoreTools.checkChannel(this, packageName, channel)
+                        if (!isExist) {
+                            var channelOpen = true
+                            // 如果不存在，添加通道
+                            MyStoreTools.addChannel(this, packageName, ChannelInfo(channel, channel))
+
+                        }
+                        // 获取通道是否开启
+                        var channelOpen = sp_action.getBoolean("${packageName}_${channel}", true)
+                        if (channelOpen) {
+                            // 获取通知时间
+                            val postTime = sbn.postTime
+                            //  检测 当前 屏幕 宽高
+                            val dm = resources.displayMetrics
+                            val width = dm.widthPixels
+                            val height = dm.heightPixels
+                            // 判断是否是横屏
+                            var isLandscape = width > height
+                            // 如果是横屏
+                            if (isLandscape) {
+                                // 发送横屏通知,横屏通知不可以使用，灵动岛
+                                // 检查 是否是 平板
+                                var isPad = MyStoreTools.isPad(this)
+
+                                if (isPad) {
+                                    MiuiStringToast.showStringToast(
+                                        this, ToastConfig(
+                                            "${title} : ${content}",
+                                           "#FFFFFF",
+                                         "logo",
+                                            3000L,
+                                            intent
+                                        )
+                                    )
+                                }else{
+                                    PostNotice(
+                                        title!!,
+                                        content!!,
+                                        intent,
+                                        "logo"
+                                    )
+                                }
+
+
+
+                            } else {
+                                // 发送竖屏通知，竖屏可以使用，灵动岛
+                                MiuiStringToast.showStringToast(
+                                    this, ToastConfig(
+                                        "${title} : ${content}",
+                                        "#FFFFFF",
+                                        "logo",
+                                        3000L,
+                                        intent
+                                    )
+                                )
+                            }
+                        }else{
+                            Log.d(TAG, "通道已关闭")
+
+                        }
+
+                    }
+
+                } else {
+                    Log.d(TAG, "功能已关闭")
+                }
             }
 
 
@@ -332,12 +444,17 @@ class GuardNotificationListenerService : NotificationListenerService() {
         manager.notify(notificationId, notification)
 
     }
+
+
+
     @SuppressLint("ForegroundServiceType")
     override fun onCreate() {
         super.onCreate()
         var id = "kg.edu.yjut.litenote.service.GuardNotificationListenerService"
         var name = "监听服务"
         var description = "GuardNotificationListenerService"
+
+
 
         var intent = Intent(this, MainActivity::class.java)
         var pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_MUTABLE)
@@ -368,14 +485,11 @@ class GuardNotificationListenerService : NotificationListenerService() {
         var notificationId = 2
         // 显示通知
         startForeground(notificationId, notification1)
-        MiuiStringToast.showStringToast(this,  ToastConfig(
-            "通知监听服务正在启动",
-            "#1296DB",
-            "dd",
-            4000L,
-            null
-        ))
 
+
+        // 获取系统应用
+        syatemApplicationsPackageName = getSystemPackages(this)
+        Log.d(TAG, "onCreate: $syatemApplicationsPackageName")
 
 
     }

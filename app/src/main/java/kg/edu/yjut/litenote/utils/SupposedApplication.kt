@@ -1,5 +1,8 @@
 package kg.edu.yjut.litenote.utils
 
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.bean.ActionInfo
 import kg.edu.yjut.litenote.bean.ChannelInfo
@@ -55,6 +58,18 @@ var supportList = listOf<ActionInfo>(
             "mipush", "小米推送"
         ),
     )),
+    ActionInfo("tv.danmaku.bili", "ChannelActivity", "将B站消息通知通过“舞台动效”提醒您。", listOf(
+        ChannelInfo(
+            "mipush", "小米推送"
+        ),
+    )),
+
+    ActionInfo("com.tencent.qqmusic", "ChannelActivity", "将QQ音乐消息通知通过“舞台动效”提醒您。", listOf(
+        ChannelInfo(
+            "mipush", "小米推送"
+        ),
+    )),
+    //
     )
 
 var supposedPackageName = arrayOf(
@@ -66,7 +81,10 @@ var supposedPackageName = arrayOf(
     "com.sina.weibo",
     "com.xingin.xhs",
     "cn.xuexi.android",
+    "com.android.mms",
     "com.zhihu.android",
+    "com.tencent.qqmusic",
+    "tv.danmaku.bili"
 )
 var supposedIconMap = mapOf(
     "com.tencent.mm" to "wechat",
@@ -78,6 +96,8 @@ var supposedIconMap = mapOf(
     "com.xingin.xhs" to "xhs",
     "cn.xuexi.android" to "xuexi",
     "com.zhihu.android" to "zhihu",
+    "com.tencent.qqmusic" to "qqmusic",
+    "tv.danmaku.bili" to "bili"
 )
 var suppsedColorStr = mapOf(
     "com.tencent.mm" to "#058B0E",
@@ -89,6 +109,8 @@ var suppsedColorStr = mapOf(
     "com.xingin.xhs" to "#FFFFFF",
     "cn.xuexi.android" to "#D81E06",
     "com.zhihu.android" to "#1296db",
+    "com.tencent.qqmusic" to "#FFD700",
+    "tv.danmaku.bili" to "#03A7FD"
 )
 var supposedDuration = mapOf(
     "com.tencent.mm" to 6000L,
@@ -100,6 +122,8 @@ var supposedDuration = mapOf(
     "com.xingin.xhs" to 5000L,
     "cn.xuexi.android" to 5000L,
     "com.zhihu.android" to 5000L,
+    "com.tencent.qqmusic" to 5000L,
+    "tv.danmaku.bili" to 5000L
 )
 
 fun getIcons(str:String) : Int{
@@ -113,7 +137,37 @@ fun getIcons(str:String) : Int{
         "xhs" -> R.drawable.xhs
         "xuexi" -> R.drawable.xuexi
         "zhihu" -> R.drawable.zhihu
+        "qqmusic" -> R.drawable.qqmusic
+        "bili" -> R.drawable.bili
+        "logo" -> R.drawable.logo
         else -> R.drawable.ic_kuaidi_foreground
     }
     return icon
 }
+
+
+fun getSystemPackages( context : Context) : ArrayList<String> {
+    var  installedPackageList = ArrayList<String>();
+   var  installedPackageInfoList = context.getPackageManager().getInstalledPackages(PackageManager.MATCH_SYSTEM_ONLY);
+
+    for ( packageInfo in installedPackageInfoList) {
+        installedPackageList.add(packageInfo.packageName);
+    }
+    return installedPackageList;
+}
+
+fun isSystemApplication( context : Context,  packageName :String ):Boolean{
+    var mPackageManager = context.packageManager;
+    try {
+        var  packageInfo = mPackageManager.getPackageInfo(packageName, PackageManager.GET_CONFIGURATIONS);
+        if((packageInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM)!=0){
+            return true;
+        } else {
+            return false;
+        }
+    } catch ( e :PackageManager.NameNotFoundException) {
+        e.printStackTrace();
+    }
+    return false;
+}
+

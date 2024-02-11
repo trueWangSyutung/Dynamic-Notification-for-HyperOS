@@ -56,7 +56,9 @@ import kg.edu.yjut.litenote.bean.AppInfo
 import kg.edu.yjut.litenote.bean.ChannelInfo
 import kg.edu.yjut.litenote.bean.ShowActionInfo
 import kg.edu.yjut.litenote.utils.MyStoreTools
+import kg.edu.yjut.litenote.utils.isSystemApplication
 import kg.edu.yjut.litenote.utils.supportList
+import kg.edu.yjut.litenote.utils.supposedPackageName
 
 @Composable
 @Preview
@@ -115,12 +117,29 @@ class MainHomeActivity : ComponentActivity() {
         val packages: MutableList<AppInfo> = ArrayList()
         try {
             val packageInfos: List<PackageInfo> = context.packageManager.getInstalledPackages(
-                PackageManager.GET_ACTIVITIES or
-                        PackageManager.GET_SERVICES or
-                        PackageManager.INSTALL_REASON_USER
+                  PackageManager.MATCH_UNINSTALLED_PACKAGES
             )
             for (info in packageInfos) {
                 val pkg = info.packageName
+                if (pkg ==     "kg.edu.yjut.enhancenoticehyperos") {
+
+                    continue
+                }
+                if (pkg ==     "com.android.mms") {
+                    packages.add(
+                        AppInfo(
+                            info.applicationInfo.loadLabel(context.packageManager).toString(),
+                            pkg,
+                            info.applicationInfo.loadIcon(context.packageManager)
+
+                        )
+                    )
+                    continue
+                }
+                // 过滤掉系统应用
+                if (isSystemApplication(context, pkg)) {
+                    continue
+                }
                 packages.add(
                     AppInfo(
                     info.applicationInfo.loadLabel(context.packageManager).toString(),
@@ -152,12 +171,26 @@ class MainHomeActivity : ComponentActivity() {
             val packages = getPkgList(this)
             Log.d("appall", packages.toString())
             var curr = mutableListOf<ShowActionInfo>()
+
             for (pkg in packages) {
                  // 检查是否在 supportList 中
                 // 将 supportList 中的 packageName 列出来
                 var supportFunctions = supportList.map { it.packageName }
                 if (supportFunctions.contains(pkg.packageName)) {
-                    curr.add(ShowActionInfo(
+                    if (pkg.packageName ==     "com.android.mms") {
+                        curr.add(
+                            ShowActionInfo(
+                                "${pkg.appName} (支持取件码存储）" ,
+                                pkg.icon,
+                                pkg.packageName,
+                                "短信",
+                                "MyHomeActivity",
+                                mutableListOf<ChannelInfo>()
+                            )
+                        )
+                        continue
+                    }
+                        curr.add(ShowActionInfo(
                         pkg.appName,
                         pkg.icon,
                         pkg.packageName,
@@ -165,6 +198,16 @@ class MainHomeActivity : ComponentActivity() {
                         supportList[supportFunctions.indexOf(pkg.packageName)].actionRouter,
                         MyStoreTools.getChannalList(this, pkg.packageName)
                     ))
+                }else{
+                    curr.add(ShowActionInfo(
+                        pkg.appName,
+                        pkg.icon,
+                        pkg.packageName,
+                        "未知",
+                        "ChannelActivity",
+                        mutableListOf<ChannelInfo>()
+                    ))
+
                 }
             }
             Log.d("apps", curr.toString())
@@ -187,7 +230,7 @@ class MainHomeActivity : ComponentActivity() {
                 ) {
                     Scaffold {
                         Column(
-                            modifier = Modifier
+                            modifier = Modifier.padding(10.dp)
                                 .fillMaxWidth()
                                 .verticalScroll(
                                     rememberScrollState()
@@ -198,7 +241,7 @@ class MainHomeActivity : ComponentActivity() {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(100.dp),
+                                    .height(200.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -296,10 +339,7 @@ class MainHomeActivity : ComponentActivity() {
                                                 })
                                             }
                                             // supportFunctions
-                                            Text(
-                                                text = apps[index].actionName,
-                                                modifier = Modifier.padding(10.dp)
-                                            )
+
                                             // configActions
                                         }
 
@@ -318,6 +358,8 @@ class MainHomeActivity : ComponentActivity() {
         }
     }
 }
+
+
 
 @Composable
 fun Greeting3(name: String, modifier: Modifier = Modifier) {
