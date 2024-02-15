@@ -2,6 +2,7 @@ package kg.edu.yjut.litenote.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,12 +11,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -29,11 +32,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.view.WindowCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.google.accompanist.insets.statusBarsHeight
 import com.google.gson.Gson
 import kg.edu.yjut.litenote.bean.ChannelInfo
 import kg.edu.yjut.litenote.ui.theme.LiteNoteTheme
 import kg.edu.yjut.litenote.utils.MyStoreTools
+import kg.edu.yjut.litenote.utils.UISetting
 
 class ChannelActivity : ComponentActivity() {
     var appName = mutableStateOf("")
@@ -59,11 +65,14 @@ class ChannelActivity : ComponentActivity() {
         var sp = getSharedPreferences("application_config", Context.MODE_PRIVATE)
         var channel = MyStoreTools.getChannalList(this, packageName.value)
 
-
+        var that = this
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             MaterialTheme {
                 // A surface container using the 'background' color from the theme
+                UISetting(context = this@ChannelActivity)
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -77,7 +86,9 @@ class ChannelActivity : ComponentActivity() {
                                 )
                                 .padding(10.dp)
                         ) {
-
+                            Spacer(modifier = Modifier
+                                .statusBarsHeight()
+                                .fillMaxWidth())
                             Column(
                                 modifier = Modifier
                                     .padding(10.dp)
@@ -97,6 +108,17 @@ class ChannelActivity : ComponentActivity() {
                                     fontWeight = MaterialTheme.typography.headlineMedium.fontWeight
                                 )
                                 Text(text = "${packageName.value}")
+                                Button(onClick = {
+                                    var intent = Intent(
+                                        this@ChannelActivity, LogActivity::class.java
+                                    )
+                                    // 传入包名
+                                    intent.putExtra("packageName", packageName.value)
+                                    startActivity(intent)
+
+                                }) {
+                                    Text(text = "通知日志")
+                                }
                             }
 
                             Column(

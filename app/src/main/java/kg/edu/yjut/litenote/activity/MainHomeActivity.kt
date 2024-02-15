@@ -18,6 +18,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,7 +48,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.google.accompanist.insets.statusBarsHeight
 import com.google.gson.Gson
 import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.activity.ui.theme.LiteNoteTheme
@@ -56,6 +59,7 @@ import kg.edu.yjut.litenote.bean.AppInfo
 import kg.edu.yjut.litenote.bean.ChannelInfo
 import kg.edu.yjut.litenote.bean.ShowActionInfo
 import kg.edu.yjut.litenote.utils.MyStoreTools
+import kg.edu.yjut.litenote.utils.UISetting
 import kg.edu.yjut.litenote.utils.isSystemApplication
 import kg.edu.yjut.litenote.utils.supportList
 import kg.edu.yjut.litenote.utils.supposedPackageName
@@ -218,10 +222,13 @@ class MainHomeActivity : ComponentActivity() {
         }.start()
         // 读取手机上的所有应用，包括系统应用
         var content = this
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         var sp = getSharedPreferences("application_config", Context.MODE_PRIVATE)
 
         setContent {
+            UISetting(context = this@MainHomeActivity)
+
             MaterialTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -237,7 +244,9 @@ class MainHomeActivity : ComponentActivity() {
                                 )
                                 .padding(10.dp)
                         ) {
-
+                            Spacer(modifier = Modifier
+                                .statusBarsHeight()
+                                .fillMaxWidth())
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()

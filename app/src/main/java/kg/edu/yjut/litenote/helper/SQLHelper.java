@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class SQLHelper extends SQLiteOpenHelper {
     // 数据库版本号
-    private static Integer Version = 1;
+    private static Integer Version = 2;
 
     /**
      * 构造函数
@@ -37,6 +37,17 @@ public class SQLHelper extends SQLiteOpenHelper {
                 ")";
         db.execSQL(sql);
 
+        String sql2 = "create table logs(" +
+                "id integer primary key autoincrement," +
+                "title varchar(64)," +
+                "content varchar(256)," +
+                "package_name varchar(256)," +
+                "channel_name varchar(256)," +
+                "insert_time datetime default (datetime('now', 'localtime'))" +
+                ")";
+
+        db.execSQL(sql2);
+
 
         // 注：数据库实际上是没被创建 / 打开的（因该方法还没调用）
         // 直到getWritableDatabase() / getReadableDatabase() 第一次被调用时才会进行创建 / 打开
@@ -49,6 +60,19 @@ public class SQLHelper extends SQLiteOpenHelper {
         // db ： 数据库
         // oldVersion ： 旧版本数据库
         // newVersion ： 新版本数据库
+
+        // 数据库升级
+        // 通过execSQL（）执行SQL语句
+        String sql2 = "create table logs(" +
+                "id integer primary key autoincrement," +
+                "title varchar(64)," +
+                "content varchar(256)," +
+                "package_name varchar(256)," +
+                "channel_name varchar(256)," +
+                "insert_time datetime default (datetime('now', 'localtime'))" +
+                ")";
+
+        db.execSQL(sql2);
 
         // 使用 SQL的ALTER语句
 

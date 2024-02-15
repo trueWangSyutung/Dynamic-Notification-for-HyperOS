@@ -9,8 +9,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import kg.edu.yjut.litenote.bean.Code;
+import kg.edu.yjut.litenote.bean.LogBeam;
 import kg.edu.yjut.litenote.helper.SQLHelper;
 
 public class CodeDatebaseUtils {
@@ -113,6 +115,90 @@ public class CodeDatebaseUtils {
         }
         return codes;
     }
+
+
+    public static long insertLog(SQLiteDatabase db,
+                                String title,
+                                String content,
+                                String packageName,
+                                String channelName
+    ) {
+        ContentValues values = new ContentValues();
+        values.put("title", title);
+        values.put("content", content);
+        values.put("package_name", packageName);
+        values.put("channel_name", channelName);
+
+        // 检查一分钟以内的日志是否重复
+        Date date = new Date();
+        @SuppressLint("SimpleDateFormat")
+        String now = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(date.getTime() +  60 * 1000));
+        @SuppressLint("SimpleDateFormat")
+        String oneMinuteAgo = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(date.getTime() - 60 * 1000));
+        String sql = "select * from logs where insert_time >=  \"" + oneMinuteAgo + "\" and  insert_time <=   \"" + now + "\" and package_name = \"" + packageName + "\" and channel_name = \"" + channelName + "\"" +
+                " and title = \"" + title + "\" and content = \"" + content + "\" ";
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        if (cursor.getCount() > 0) {
+            return -1;
+        }
+        // 插入日志
+        return db.insert("logs", null, values);
+
+    }
+
+
+    public static ArrayList<LogBeam> getLogsByPackageNameAndTime(
+            SQLiteDatabase db,
+            String packageName,
+            int page
+    ) {
+        // 获取当前 年月日
+        Date date = new Date();
+        @SuppressLint("SimpleDateFormat")
+        String now = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() +  24 * 60 * 60 * 1000));
+       // 获取当前时间的前7天
+        @SuppressLint("SimpleDateFormat")
+        String sevenDaysAgo = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000));
+
+        String sql = "select * from logs where " +
+                "package_name=\"" + packageName + "\" and insert_time >=  \"" + sevenDaysAgo + "\" and  insert_time <=   \"" + now + "\" order by insert_time desc limit 10 offset " + (page-1)*10;
+
+
+        @SuppressLint("Recycle") Cursor cursor = db.rawQuery(sql, null);
+
+        ArrayList<LogBeam> logs = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") LogBeam log = new LogBeam(
+                    cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getString(cursor.getColumnIndex("title")),
+                    cursor.getString(cursor.getColumnIndex("content")),
+                    cursor.getString(cursor.getColumnIndex("package_name")),
+                    cursor.getString(cursor.getColumnIndex("channel_name")),
+                    cursor.getString(cursor.getColumnIndex("insert_time"))
+            );
+            logs.add(log);
+        }
+        return logs;
+
+    }
+
+    public static void deleteOutOfSevenDaysLogs(SQLiteDatabase db) {
+        // 删除7天前的日志
+        Date date = new Date();
+        @SuppressLint("SimpleDateFormat")
+        String sevenDaysAgo = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000));
+        String sql = "delete from logs where insert_time < \"" + sevenDaysAgo + "\"";
+        db.execSQL(sql);
+    }
+
+
+    public  static void deleteLogsByPackageName(SQLiteDatabase db, String packageName) {
+        String sql = "delete from logs where package_name = \"" + packageName + "\"";
+        db.execSQL(sql);
+    }
+
 
 
 

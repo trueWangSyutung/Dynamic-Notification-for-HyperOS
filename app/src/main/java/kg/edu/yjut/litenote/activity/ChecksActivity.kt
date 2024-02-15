@@ -15,6 +15,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,10 +44,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import androidx.wear.compose.material.Colors
+import com.google.accompanist.insets.statusBarsHeight
 import kg.edu.yjut.litenote.MainActivity
 import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.activity.ui.theme.LiteNoteTheme
+import kg.edu.yjut.litenote.utils.UISetting
 import java.lang.Exception
 
 @Composable
@@ -171,10 +175,12 @@ class ChecksActivity : ComponentActivity() {
         isAgreePA = sp.getBoolean("isAgreePA", false)
         isNotificationListenersEnabledFlag = isNotificationListenersEnabled()
         isCanDrawOverlays = Settings.canDrawOverlays(this)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             MaterialTheme {
                 // A surface container using the 'background' color from the theme
+                UISetting(context = this@ChecksActivity)
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -191,6 +197,9 @@ class ChecksActivity : ComponentActivity() {
                                 ),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
+                            Spacer(modifier = Modifier
+                                .statusBarsHeight()
+                                .fillMaxWidth())
                         // 显示图片 assets 文件夹下的图片
                         Row(
                             modifier = Modifier

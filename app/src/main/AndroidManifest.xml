@@ -13,7 +13,6 @@
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
-
     <uses-permission
         android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
         tools:ignore="ProtectedPermissions" />
@@ -29,6 +28,11 @@
         android:theme="@style/Theme.LiteNote"
         tools:targetApi="31">
         <activity
+            android:name=".activity.LogActivity"
+            android:exported="false"
+            android:label="@string/title_activity_log"
+            android:theme="@style/Theme.LiteNote" />
+        <activity
             android:name=".activity.ChannelActivity"
             android:exported="false"
             android:label="@string/title_activity_channel"
@@ -37,7 +41,7 @@
             android:name=".activity.MainHomeActivity"
             android:exported="true"
             android:label="@string/title_activity_main_home"
-            android:theme="@style/Theme.LiteNote"></activity>
+            android:theme="@style/Theme.LiteNote" />
         <activity
             android:name=".activity.ChecksActivity"
             android:exported="false"

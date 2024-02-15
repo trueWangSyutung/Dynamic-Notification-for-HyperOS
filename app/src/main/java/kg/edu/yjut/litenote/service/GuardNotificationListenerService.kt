@@ -35,6 +35,7 @@ import kg.edu.yjut.litenote.utils.supposedIconMap
 import kg.edu.yjut.litenote.utils.supposedPackageName
 import kg.edu.yjut.litenote.utils.suppsedColorStr
 import java.util.Calendar
+import kotlin.concurrent.thread
 import kotlin.random.Random
 
 
@@ -63,12 +64,21 @@ class GuardNotificationListenerService : NotificationListenerService() {
     @SuppressLint("WrongConstant")
     private fun getMsg(sbn: StatusBarNotification): Array<String> {
         val extras = sbn.notification.extras
+        var db = CodeDatebaseUtils.openOrCreateDatabase(this)
+
+        Thread{
+            CodeDatebaseUtils.deleteOutOfSevenDaysLogs(db)
+        }.start()
+
+
 
         val packageName = sbn.packageName
         println("packageName: $packageName")
         var sp_action =getSharedPreferences("application_config", Context.MODE_PRIVATE)
         Log.d(TAG, "getMsg: ${extras.toString()}")
         Log.d(TAG, "getMsg: ${sbn.toString()}")
+
+
 
         if (packageName.equals( "com.android.mms")) {
             Log.d(TAG, "extras: ${extras.getBundle("android.messages")}")
@@ -129,7 +139,6 @@ class GuardNotificationListenerService : NotificationListenerService() {
                             Log.d(TAG, "不写入数据")
                         }else{
                             Log.d(TAG, "写入自有数据库")
-                            var db = CodeDatebaseUtils.openOrCreateDatabase(this)
                             var contentValues =  ContentValues()
                             contentValues.put("code", codeStr)
 
@@ -183,7 +192,6 @@ class GuardNotificationListenerService : NotificationListenerService() {
         else{
             // 如果在 supposedPackageName 中能找到
             // 则说明是其他应用的通知 supposedPackageName.contains(packageName)
-
             if (supposedPackageName.contains(packageName)) {
                 var action = sp_action.getBoolean(packageName, true)
                 // 获取应用信息
@@ -222,6 +230,15 @@ class GuardNotificationListenerService : NotificationListenerService() {
                         // 获取通道是否开启
                         var channelOpen = sp_action.getBoolean("${packageName}_${channel}", true)
                         if (channelOpen) {
+
+                            CodeDatebaseUtils.insertLog(
+                                db,
+                                title!!,
+                                content!!,
+                                packageName,
+                                channel
+                            )
+
                             // 获取通知时间
                             val postTime = sbn.postTime
                             //  检测 当前 屏幕 宽高
@@ -327,6 +344,14 @@ class GuardNotificationListenerService : NotificationListenerService() {
                         // 获取通道是否开启
                         var channelOpen = sp_action.getBoolean("${packageName}_${channel}", true)
                         if (channelOpen) {
+                            CodeDatebaseUtils.insertLog(
+                                db,
+                                title!!,
+                                content!!,
+                                packageName,
+                                channel
+                            )
+
                             // 获取通知时间
                             val postTime = sbn.postTime
                             //  检测 当前 屏幕 宽高
@@ -489,7 +514,19 @@ class GuardNotificationListenerService : NotificationListenerService() {
 
         // 获取系统应用
         syatemApplicationsPackageName = getSystemPackages(this)
+        syatemApplicationsPackageName.add("kg.edu.yjut.enhancenoticehyperos")
+        //  为了过滤掉该应用本身的通知
         Log.d(TAG, "onCreate: $syatemApplicationsPackageName")
+
+        MiuiStringToast.showStringToast(
+            this, ToastConfig(
+                "灵动通知 For HyperOS 通知监听服务已启动",
+                "#1296DB",
+                "dd",
+                6000L,
+                pendingIntent
+            )
+        )
 
 
     }

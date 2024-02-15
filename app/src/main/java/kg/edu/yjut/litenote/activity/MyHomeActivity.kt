@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -74,11 +75,14 @@ import androidx.compose.ui.unit.dp
 import kg.edu.yjut.litenote.activity.ui.theme.LiteNoteTheme
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.google.accompanist.insets.statusBarsHeight
 import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.bean.Code
 import kg.edu.yjut.litenote.helper.RegexMangerHelper
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
+import kg.edu.yjut.litenote.utils.UISetting
 import kg.edu.yjut.litenote.utils.Utils
 
 @Composable
@@ -247,6 +251,8 @@ class MyHomeActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         // 状态栏透明
         // 读取 Sqlite 数据库
         db = CodeDatebaseUtils.openOrCreateDatabase(this)
@@ -271,6 +277,7 @@ class MyHomeActivity : ComponentActivity() {
 
         setContent {
             LiteNoteTheme {
+                UISetting(context = this@MyHomeActivity)
 
                 Surface(
                     modifier = Modifier
@@ -359,131 +366,140 @@ class MyHomeActivity : ComponentActivity() {
                                     .verticalScroll(rememberScrollState())
 
                             ) {
-
+                                Spacer(modifier = Modifier
+                                    .statusBarsHeight()
+                                    .fillMaxWidth())
                                 AnimatedVisibility(
                                     visible = !isWriteCander.value,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(0.dp, 0.dp, 0.dp, 10.dp)
                                 ) {
-                                    Row() {
-                                        MyIconButton(
-                                            "未取件", R.mipmap.no, {
-                                                typeState.value = 0
-                                                page.value = 1
-                                                list.clear()
-                                                list.addAll(
-                                                    CodeDatebaseUtils.getAllCodes(
-                                                        db, typeState.value, page.value - 1, pageSize
+
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Row() {
+                                            MyIconButton(
+                                                "未取件", R.mipmap.no, {
+                                                    typeState.value = 0
+                                                    page.value = 1
+                                                    list.clear()
+                                                    list.addAll(
+                                                        CodeDatebaseUtils.getAllCodes(
+                                                            db, typeState.value, page.value - 1, pageSize
+                                                        )
                                                     )
-                                                )
-                                            }, typeState.value == 0
-                                        )
-                                        MyIconButton(
-                                            "已取件", R.mipmap.yes, {
-                                                typeState.value = 1
-                                                page.value = 1
-                                                list.clear()
-                                                list.addAll(
-                                                    CodeDatebaseUtils.getAllCodes(
-                                                        db, typeState.value, page.value - 1, pageSize
-                                                    )
-                                                )
-
-                                            }, typeState.value == 1
-
-                                        )
-
-
-                                    }
-                                    for (i in list) {
-                                        CodeContainer(i.code, i.yz, i.kd,i.status,
-                                            i.id
-                                        ) {
-                                            if (i.status == 0){
-                                                CodeDatebaseUtils.updateStatus(db, i.id, 1)
-                                                Toast.makeText(contxt, "取件成功", Toast.LENGTH_SHORT)
-                                                    .show()
-                                            }else  if (i.status == 1){
-                                                CodeDatebaseUtils.deleteData(db,i.id)
-                                                Toast.makeText(contxt, "删除成功", Toast.LENGTH_SHORT)
-                                                    .show()
-                                            }
-
-                                            list.clear()
-                                            page.value = 1
-                                            // 重新加载数据
-                                            list.addAll(
-                                                CodeDatebaseUtils.getAllCodes(
-                                                    db, typeState.value, page.value - 1, pageSize
-                                                )
+                                                }, typeState.value == 0
                                             )
+                                            MyIconButton(
+                                                "已取件", R.mipmap.yes, {
+                                                    typeState.value = 1
+                                                    page.value = 1
+                                                    list.clear()
+                                                    list.addAll(
+                                                        CodeDatebaseUtils.getAllCodes(
+                                                            db, typeState.value, page.value - 1, pageSize
+                                                        )
+                                                    )
+
+                                                }, typeState.value == 1
+
+                                            )
+
 
                                         }
 
-                                    }
+                                        for (i in list) {
+                                            CodeContainer(i.code, i.yz, i.kd,i.status,
+                                                i.id
+                                            ) {
+                                                if (i.status == 0){
+                                                    CodeDatebaseUtils.updateStatus(db, i.id, 1)
+                                                    Toast.makeText(contxt, "取件成功", Toast.LENGTH_SHORT)
+                                                        .show()
+                                                }else  if (i.status == 1){
+                                                    CodeDatebaseUtils.deleteData(db,i.id)
+                                                    Toast.makeText(contxt, "删除成功", Toast.LENGTH_SHORT)
+                                                        .show()
+                                                }
 
-                                    AnimatedVisibility(
-                                        visible = list.size > 0,
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(0.dp, 0.dp, 0.dp, 100.dp)
-                                    ) {
+                                                list.clear()
+                                                page.value = 1
+                                                // 重新加载数据
+                                                list.addAll(
+                                                    CodeDatebaseUtils.getAllCodes(
+                                                        db, typeState.value, page.value - 1, pageSize
+                                                    )
+                                                )
 
-                                        Row(
-                                            horizontalArrangement = Arrangement.Center,
+                                            }
+
+                                        }
+
+                                        AnimatedVisibility(
+                                            visible = list.size > 0,
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(10.dp)
+                                                .fillMaxSize()
+                                                .padding(0.dp, 0.dp, 0.dp, 100.dp)
                                         ) {
-                                            Button(
-                                                onClick = {
-                                                    if (page.value > 1) {
-                                                        page.value -= 1
+
+                                            Row(
+                                                horizontalArrangement = Arrangement.Center,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(10.dp)
+                                            ) {
+                                                Button(
+                                                    onClick = {
+                                                        if (page.value > 1) {
+                                                            page.value -= 1
+                                                            var dataGet = CodeDatebaseUtils.getAllCodes(
+                                                                db,
+                                                                typeState.value,
+                                                                page.value - 1,
+                                                                pageSize
+                                                            )
+                                                            if (dataGet.size > 0) {
+                                                                list.clear()
+                                                                list.addAll(dataGet)
+                                                            }
+                                                        }
+                                                    },
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                ) {
+                                                    Text(text = "上一页")
+                                                }
+                                                Button(
+                                                    onClick = {
+                                                        page.value += 1
                                                         var dataGet = CodeDatebaseUtils.getAllCodes(
-                                                            db,
-                                                            typeState.value,
-                                                            page.value - 1,
-                                                            pageSize
+                                                            db, typeState.value, page.value - 1, pageSize
                                                         )
                                                         if (dataGet.size > 0) {
                                                             list.clear()
                                                             list.addAll(dataGet)
+                                                        } else {
+                                                            page.value -= 1
+                                                            // 提示没有数据了
+                                                            Toast.makeText(
+                                                                contxt,
+                                                                "没有数据了",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
                                                         }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(10.dp)
-                                            ) {
-                                                Text(text = "上一页")
-                                            }
-                                            Button(
-                                                onClick = {
-                                                    page.value += 1
-                                                    var dataGet = CodeDatebaseUtils.getAllCodes(
-                                                        db, typeState.value, page.value - 1, pageSize
-                                                    )
-                                                    if (dataGet.size > 0) {
-                                                        list.clear()
-                                                        list.addAll(dataGet)
-                                                    } else {
-                                                        page.value -= 1
-                                                        // 提示没有数据了
-                                                        Toast.makeText(
-                                                            contxt,
-                                                            "没有数据了",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                    }
 
-                                                },
-                                                modifier = Modifier
-                                                    .padding(10.dp)
-                                            ) {
-                                                Text(text = "下一页")
+                                                    },
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                ) {
+                                                    Text(text = "下一页")
+                                                }
                                             }
                                         }
                                     }
+
 
                                 }
 
@@ -494,11 +510,16 @@ class MyHomeActivity : ComponentActivity() {
                         } else {
                             // 设置
                             Column(
-                                modifier = Modifier.padding(20.dp, 120.dp, 20.dp, 100.dp).verticalScroll(
-                                    rememberScrollState()
-                                ),
+                                modifier = Modifier
+                                    .padding(20.dp, 120.dp, 20.dp, 100.dp)
+                                    .verticalScroll(
+                                        rememberScrollState()
+                                    ),
 
                             ) {
+                                Spacer(modifier = Modifier
+                                    .statusBarsHeight()
+                                    .fillMaxWidth())
                                 Text(
                                     text = "设置",
                                     fontSize = 40.sp,

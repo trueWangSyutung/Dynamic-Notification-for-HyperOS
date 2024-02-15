@@ -3,7 +3,11 @@ package kg.edu.yjut.litenote.utils
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kg.edu.yjut.litenote.R
+import kg.edu.yjut.litenote.activity.isDarkTheme
 import kg.edu.yjut.litenote.bean.ActionInfo
 import kg.edu.yjut.litenote.bean.ChannelInfo
 
@@ -145,6 +149,20 @@ fun getIcons(str:String) : Int{
     return icon
 }
 
+
+
+@Composable
+fun UISetting(context: Context) {
+    rememberSystemUiController().setStatusBarColor(
+        Color.Transparent, darkIcons =!isDarkTheme(context)
+    )
+    rememberSystemUiController().setNavigationBarColor(
+        Color.Transparent, darkIcons =!isDarkTheme(context)
+    )
+    rememberSystemUiController().setSystemBarsColor(
+        Color.Transparent, darkIcons =!isDarkTheme(context)
+    )
+}
 
 fun getSystemPackages( context : Context) : ArrayList<String> {
     var  installedPackageList = ArrayList<String>();
