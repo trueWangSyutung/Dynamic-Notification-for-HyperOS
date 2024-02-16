@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -43,6 +44,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.sharp.Close
@@ -80,6 +82,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.Role.Companion.Button
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kg.edu.yjut.litenote.activity.ui.theme.LiteNoteTheme
@@ -163,6 +166,9 @@ fun HomeLogItem(
         var appName = appManager.getApplicationLabel(appInfo).toString()
         var appIcon = appManager.getApplicationIcon(appInfo)
 
+        // 获取屏幕宽度 dp
+        var screenWidth = Resources.getSystem().displayMetrics.widthPixels / Resources.getSystem().displayMetrics.density
+
 
         Row(
             modifier = Modifier
@@ -190,7 +196,12 @@ fun HomeLogItem(
                 }
                 Text(
                     text = logBeam.title,
-                    fontSize = 10.sp
+                    modifier = Modifier.width(screenWidth.dp*2/3),
+                    fontSize = 10.sp,
+                    maxLines = 1,
+                    softWrap = true,
+                    overflow = TextOverflow.Ellipsis
+
                 )
                 Text(
                     text = logBeam.content,
@@ -504,6 +515,43 @@ class MyHomeActivity : ComponentActivity() {
                                 }
                             }
                         },
+                        floatingActionButton = {
+                            if (selectIndex == 1 || selectIndex == 0){
+                                IconButton(
+                                    onClick = {
+                                        if (selectIndex == 0) {
+                                            /// 刷新
+                                            loglists.clear()
+                                            logpage.value = 1
+                                            loglists.addAll(CodeDatebaseUtils.getLogsByTime(
+                                                db, logpage.value
+                                            ))
+
+                                        }else if (selectIndex == 1) {
+                                            // 刷新
+                                            list.clear()
+                                            page.value = 1
+                                            list.addAll(
+                                                CodeDatebaseUtils.getAllCodes(
+                                                    db, typeState.value, page.value - 1, pageSize
+                                                )
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .size(60.dp)
+                                        .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.extraLarge)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Refresh,
+                                        contentDescription = "add",
+                                        tint = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+
+                        }
 
                         ) {
 
@@ -561,6 +609,10 @@ class MyHomeActivity : ComponentActivity() {
                             }
                         }
                         else if (selectIndex == 1) {
+
+                            var isReflash = remember {
+                                mutableStateOf(false)
+                            }
                             // 主页
                             Column(
                                 modifier = Modifier
@@ -572,6 +624,9 @@ class MyHomeActivity : ComponentActivity() {
                                     .statusBarsHeight()
                                     .fillMaxWidth())
                                 AppBar()
+
+                                // 设置下拉刷新
+
 
                                 AnimatedVisibility(
                                     visible = !isWriteCander.value,

@@ -533,8 +533,7 @@ class GuardNotificationListenerService : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
-        Log.d(TAG, "onNotificationPosted: ${getMsg(sbn!!)}")
-        var arrays = getMsg(sbn)
+        var arrays = getMsg(sbn!!)
 
 
     }
@@ -566,7 +565,6 @@ class GuardNotificationListenerService : NotificationListenerService() {
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         super.onNotificationRemoved(sbn)
-        Log.d(TAG, "onNotificationRemoved: ${getMsg(sbn!!)}")
 
     }
 
