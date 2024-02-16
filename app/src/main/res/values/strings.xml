@@ -12,4 +12,5 @@
     <string name="title_activity_main_home">MainHomeActivity</string>
     <string name="title_activity_channel">ChannelActivity</string>
     <string name="title_activity_log">LogActivity</string>
+    <string name="title_activity_rule">RuleActivity</string>
 </resources>

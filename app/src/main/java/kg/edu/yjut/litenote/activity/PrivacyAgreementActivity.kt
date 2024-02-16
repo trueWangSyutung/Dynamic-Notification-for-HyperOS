@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +35,15 @@ class PrivacyAgreementActivity : ComponentActivity() {
         val dm = resources.displayMetrics
         val width = dm.widthPixels
         val height = dm.heightPixels
+        // 获取传递过来的数据
+        val intent = intent
+        val type = intent.getStringExtra("type")
+        var isShow = false
+        // 如果不是 look 则不显示下方按钮
+        if (type == "look") {
+            isShow = true
+        }
+
         setContent {
             MaterialTheme {
                 // A surface container using the 'background' color from the theme
@@ -52,32 +62,41 @@ class PrivacyAgreementActivity : ComponentActivity() {
                                 )
                         ) {
                             Web("file:///android_asset/ysxy.html")
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(20.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ){
-                                Button(onClick = {
-                                    var sp = getSharedPreferences("config", MODE_PRIVATE)
-                                    var editor = sp.edit()
-                                    editor.putBoolean("isAgreePA", true)
-                                    editor.apply()
-                                    startActivity(Intent(this@PrivacyAgreementActivity, MainActivity::class.java))
-                                    finish()
-                                },
-                                    modifier = Modifier.padding(5.dp).width(100.dp),
-                                ) {
-                                    Text(text = "同意")
-                                }
-                                Button(onClick = {
-                                    startActivity(Intent(this@PrivacyAgreementActivity, MainActivity::class.java))
-                                    finish()
-                                },
-                                    modifier = Modifier.padding(5.dp).width(100.dp),
-                                ) {
-                                    Text(text = "拒绝")
+                            AnimatedVisibility(visible = !isShow) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(20.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Button(onClick = {
+                                        var sp = getSharedPreferences("config", MODE_PRIVATE)
+                                        var editor = sp.edit()
+                                        editor.putBoolean("isAgreePA", true)
+                                        editor.apply()
+                                        startActivity(Intent(this@PrivacyAgreementActivity, MainActivity::class.java))
+                                        finish()
+                                    },
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .width(100.dp),
+                                    ) {
+                                        Text(text = "同意")
+                                    }
+                                    Button(onClick = {
+                                        startActivity(Intent(this@PrivacyAgreementActivity, MainActivity::class.java))
+                                        finish()
+                                    },
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .width(100.dp),
+                                    ) {
+                                        Text(text = "拒绝")
+                                    }
                                 }
                             }
+
                         }
                     }
                 }

@@ -49,4 +49,46 @@ public class Utils {
         }
 
     }
+
+
+    // 获取应用版本号
+    public static String getVersionName(Context context) {
+        String versionName = "1.0.0";
+        try {
+            versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return versionName;
+    }
+
+    // 获取应用版本代码
+public static int getVersionCode(Context context) {
+        int versionCode = 1;
+        try {
+            versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return versionCode;
+    }
+
+    // 获取应用编译时间
+    public static String getBuildTime(Context context) {
+        String buildTime = "2019-01-01 00:00:00";
+        try {
+            buildTime = context.getString(context.getResources().getIdentifier("build_time", "string", context.getPackageName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return buildTime;
+    }
+
+    // 获取应用开发者
+    public static String getDeveloper(Context context) {
+        String developer = "Syutung";
+        return developer;
+    }
+
+
 }

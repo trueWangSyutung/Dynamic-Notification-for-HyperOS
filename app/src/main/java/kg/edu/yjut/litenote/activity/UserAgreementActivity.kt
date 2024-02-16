@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,14 @@ class UserAgreementActivity : ComponentActivity() {
         val dm = resources.displayMetrics
         val width = dm.widthPixels
         val height = dm.heightPixels
+        val intent = intent
+        val type = intent.getStringExtra("type")
+        var isShow = false
+        // 如果不是 look 则不显示下方按钮
+        if (type == "look") {
+            isShow = true
+        }
+
         setContent {
             MaterialTheme {
                 // A surface container using the 'background' color from the theme
@@ -57,30 +66,45 @@ class UserAgreementActivity : ComponentActivity() {
                                 )
                         ) {
                             Web("file:///android_asset/yhxy.html")
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(20.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ){
-                                Button(onClick = {
-                                    var sp = getSharedPreferences("config", MODE_PRIVATE)
-                                    var editor = sp.edit()
-                                    editor.putBoolean("isAgreeUA", true)
-                                    editor.apply()
-                                    startActivity(Intent(this@UserAgreementActivity, ChecksActivity::class.java))
-                                    finish()
-                                },
-                                    modifier = Modifier.padding(5.dp).width(100.dp),
+
+                            AnimatedVisibility(visible = !isShow) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(20.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(text = "同意")
-                                }
-                                Button(onClick = {
-                                    startActivity(Intent(this@UserAgreementActivity, ChecksActivity::class.java))
-                                    finish()
-                                },
-                                    modifier = Modifier.padding(5.dp).width(100.dp),
+                                    Button(
+                                        onClick = {
+                                            var sp = getSharedPreferences("config", MODE_PRIVATE)
+                                            var editor = sp.edit()
+                                            editor.putBoolean("isAgreeUA", true)
+                                            editor.apply()
+                                            startActivity(
+                                                Intent(
+                                                    this@UserAgreementActivity,
+                                                    ChecksActivity::class.java
+                                                )
+                                            )
+                                            finish()
+                                        },
+                                        modifier = Modifier.padding(5.dp).width(100.dp),
                                     ) {
-                                    Text(text = "拒绝")
+                                        Text(text = "同意")
+                                    }
+                                    Button(
+                                        onClick = {
+                                            startActivity(
+                                                Intent(
+                                                    this@UserAgreementActivity,
+                                                    ChecksActivity::class.java
+                                                )
+                                            )
+                                            finish()
+                                        },
+                                        modifier = Modifier.padding(5.dp).width(100.dp),
+                                    ) {
+                                        Text(text = "拒绝")
+                                    }
                                 }
                             }
                         }

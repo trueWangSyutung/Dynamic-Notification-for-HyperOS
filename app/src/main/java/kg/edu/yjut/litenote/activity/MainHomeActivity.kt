@@ -273,7 +273,7 @@ class MainHomeActivity : ComponentActivity() {
                                         Column(
                                             modifier = Modifier.fillMaxWidth(),
                                         ) {
-                                            var check = remember {
+                                            var  check = remember {
                                                 mutableStateOf(
                                                     sp.getBoolean(
                                                         apps[index].packageName,

@@ -184,6 +184,39 @@ public class CodeDatebaseUtils {
 
     }
 
+    public static ArrayList<LogBeam> getLogsByTime(
+            SQLiteDatabase db,
+            int page
+    ){
+        // 获取当前 年月日
+        Date date = new Date();
+        @SuppressLint("SimpleDateFormat")
+        String now = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() +  24 * 60 * 60 * 1000));
+        // 获取当前时间的前7天
+        @SuppressLint("SimpleDateFormat")
+        String sevenDaysAgo = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000));
+
+        String sql = "select * from logs where " +
+                "insert_time >=  \"" + sevenDaysAgo + "\" and  insert_time <=   \"" + now + "\" order by insert_time desc limit 20 offset " + (page-1)*20;
+
+        @SuppressLint("Recycle") Cursor cursor = db.rawQuery(sql, null);
+
+        ArrayList<LogBeam> logs = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            @SuppressLint("Range") LogBeam log = new LogBeam(
+                    cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getString(cursor.getColumnIndex("title")),
+                    cursor.getString(cursor.getColumnIndex("content")),
+                    cursor.getString(cursor.getColumnIndex("package_name")),
+                    cursor.getString(cursor.getColumnIndex("channel_name")),
+                    cursor.getString(cursor.getColumnIndex("insert_time"))
+            );
+            logs.add(log);
+        }
+        return logs;
+
+    }
+
     public static void deleteOutOfSevenDaysLogs(SQLiteDatabase db) {
         // 删除7天前的日志
         Date date = new Date();

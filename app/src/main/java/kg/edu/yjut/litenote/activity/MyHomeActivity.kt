@@ -2,6 +2,7 @@ package kg.edu.yjut.litenote.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
@@ -35,9 +36,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.sharp.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -68,7 +76,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -80,6 +90,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.insets.statusBarsHeight
 import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.bean.Code
+import kg.edu.yjut.litenote.bean.LogBeam
 import kg.edu.yjut.litenote.helper.RegexMangerHelper
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import kg.edu.yjut.litenote.utils.UISetting
@@ -125,6 +136,141 @@ fun MyIconButton(
     }
 }
 
+
+@Composable
+@SuppressLint("UnusedMaterial3Api")
+@Preview(showBackground = true)
+fun HomeLogItem(
+    context: Context = LocalContext.current,
+    logBeam: LogBeam = LogBeam(
+        1,"fdsfdsff","fdgdfgdfg","fgdfgfdg","fgdfgfdg","2024-01-05"
+    )
+) {
+    var unShow = remember {
+        mutableStateOf(false)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+            .border(1.dp, Color.Gray, MaterialTheme.shapes.medium)
+            .padding(10.dp)
+    ) {
+        // 获取包名对应的应用名称、图标
+        var appManager = context.packageManager
+        var appInfo = appManager.getApplicationInfo(logBeam.packageName, 0)
+        var appName = appManager.getApplicationLabel(appInfo).toString()
+        var appIcon = appManager.getApplicationIcon(appInfo)
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ){
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+
+                ) {
+                    Image(
+                        painter = rememberDrawablePainter(drawable = appIcon),
+                        contentDescription = "icon",
+                        modifier = Modifier
+                            .width(30.dp)
+                            .height(30.dp)
+                            .padding(4.dp)
+                    )
+                    Text(
+                        text = appName,
+                        fontSize = 15.sp
+                    )
+                }
+                Text(
+                    text = logBeam.title,
+                    fontSize = 10.sp
+                )
+                Text(
+                    text = logBeam.content,
+                    fontSize = 10.sp
+                )
+
+                Text(
+                    text = "通知时间：${logBeam.insertTime}",
+                    fontSize = 10.sp
+                )
+
+
+            }
+            IconButton(onClick = {
+                unShow.value = !unShow.value
+            }) {
+                Icon(
+                    imageVector = if (unShow.value) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = "Localized description",
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .width(50.dp)
+                        .height(50.dp)
+                )
+            }
+        }
+
+        AnimatedVisibility(visible = unShow.value) {
+            Column {
+                Text(
+                    text = "应用包名：${logBeam.packageName}",
+                    fontSize = 10.sp
+                )
+                Text(
+                    text = "通知渠道：${logBeam.channelName}",
+                    fontSize = 10.sp
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = {
+                            // 获取 sharedPreference
+                            var  sp = context.getSharedPreferences("application_config", Context.MODE_PRIVATE)
+                            // 获取 app 的 信息
+                            sp.edit().putBoolean(
+                                "${logBeam.packageName}_${logBeam.channelName}",
+                                false
+                            ).apply()
+                        },
+                        modifier = Modifier.padding(5.dp),
+
+                        ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            androidx.wear.compose.material.Icon(
+                                imageVector = Icons.Sharp.Close,
+                                contentDescription = "Localized description",
+                                tint = Color.White
+                            )
+                            Text(text = "禁用") }
+                    }
+
+
+                }
+            }
+
+        }
+
+
+
+
+
+    }
+}
 
 
 @Preview(showBackground = true)
@@ -240,14 +386,28 @@ class MyHomeActivity : ComponentActivity() {
     var db : SQLiteDatabase? = null
 
 
-    var labelList = listOf("首页", "设置")
-    var iconList = listOf(Icons.Filled.Home, Icons.Filled.Settings)
+    var labelList = listOf(
+        "首页",
+        "取件码",
+        "设置",
+        "关于"
+     )
+    var iconList = listOf(
+        Icons.Filled.Home,
+        Icons.Filled.Star,
+        Icons.Filled.Settings,
+        Icons.Filled.Info
+    )
+
 
 
     var codeRegex = "【(.*?)】到(.*?)凭(.*?)"
     var regexCompany = "【(.*?)】"
     var regexYizhan = "到(.*?)凭"
     var isWriteCander = mutableStateOf(false)
+    var loglists = mutableStateListOf<LogBeam> ()
+    val logpage = mutableStateOf(1)
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -256,6 +416,7 @@ class MyHomeActivity : ComponentActivity() {
         // 状态栏透明
         // 读取 Sqlite 数据库
         db = CodeDatebaseUtils.openOrCreateDatabase(this)
+
         list.addAll(CodeDatebaseUtils.getAllCodes(
             db, typeState.value ,  page.value - 1, pageSize
         ))
@@ -273,38 +434,26 @@ class MyHomeActivity : ComponentActivity() {
         regexCompany = sb.getString("companyRegex", "【(.*?)】")!!
         regexYizhan = sb.getString("yizhanRegex", "到(.*?)驿站")!!
 
-
+        loglists.addAll(CodeDatebaseUtils.getLogsByTime(
+            db, logpage.value
+        ))
 
         setContent {
-            LiteNoteTheme {
+            MaterialTheme {
                 UISetting(context = this@MyHomeActivity)
 
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
 
 
                 ) {
                     var selectIndex by remember {
                         mutableStateOf(0)
                     }
-                    var codeRegexHefa by remember {
-                        mutableStateOf(true)
-                    }
 
                     Scaffold(
-                        topBar = {
-                            AnimatedVisibility(
-                                visible = selectIndex == 0,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(0.dp, 0.dp, 0.dp, 0.dp)
-                            ) {
 
-                                AppBar()
-                            }
-                        },
                         bottomBar = {
 
                             BottomAppBar(
@@ -347,7 +496,7 @@ class MyHomeActivity : ComponentActivity() {
                                                     contentDescription = label,
                                                     tint = if (selectIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                                 )
-                                                Text(text = label, fontSize = 15.sp)
+                                                Text(text = label, fontSize = 10.sp)
                                             }
 
                                         }
@@ -358,7 +507,60 @@ class MyHomeActivity : ComponentActivity() {
 
                         ) {
 
-                        if (selectIndex == 0) {
+                        if (selectIndex == 0){
+                            Column(
+                                modifier = Modifier
+                                    .padding(20.dp, 120.dp, 20.dp, 100.dp)
+                                    .verticalScroll(
+                                        rememberScrollState()
+                                    ),
+
+                                ) {
+                                Spacer(
+                                    modifier = Modifier
+                                        .statusBarsHeight()
+                                        .fillMaxWidth()
+                                )
+                                Text(
+                                    text = "历史通知",
+                                    fontSize = 40.sp,
+                                    modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 20.dp)
+                                )
+
+                                for (i in loglists) {
+                                    HomeLogItem(
+                                        logBeam = i
+                                    )
+
+                                }
+
+                                // 加载更多
+
+                                Button(
+                                    onClick = {
+                                        logpage.value += 1
+                                        var newLogs = CodeDatebaseUtils.getLogsByTime(
+                                            db, logpage.value
+                                        )
+                                        if (newLogs.size > 0){
+                                            loglists.addAll(newLogs)
+                                        }else{
+                                            logpage.value -= 1
+                                            Toast.makeText(contxt, "没有更多数据了", Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp)
+                                ) {
+                                    Text(text = "加载更多")
+                                }
+
+
+
+                            }
+                        }
+                        else if (selectIndex == 1) {
                             // 主页
                             Column(
                                 modifier = Modifier
@@ -369,6 +571,8 @@ class MyHomeActivity : ComponentActivity() {
                                 Spacer(modifier = Modifier
                                     .statusBarsHeight()
                                     .fillMaxWidth())
+                                AppBar()
+
                                 AnimatedVisibility(
                                     visible = !isWriteCander.value,
                                     modifier = Modifier
@@ -507,7 +711,7 @@ class MyHomeActivity : ComponentActivity() {
 
                             }
 
-                        } else {
+                        } else if (selectIndex == 2) {
                             // 设置
                             Column(
                                 modifier = Modifier
@@ -526,15 +730,6 @@ class MyHomeActivity : ComponentActivity() {
                                     modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 20.dp)
                                 )
 
-                                var codeEditRegex by remember {
-                                    mutableStateOf(codeRegex)
-                                }
-                                var regexEditCompany by remember {
-                                    mutableStateOf(regexCompany)
-                                }
-                                var regexEditYizhan by remember {
-                                    mutableStateOf(regexYizhan)
-                                }
 
 
                                 Column(
@@ -555,8 +750,8 @@ class MyHomeActivity : ComponentActivity() {
                                                 contentDescription = "icon",
                                                 modifier = Modifier
                                                     .padding(10.dp)
-                                                    .height(50.dp)
-                                                    .width(50.dp)
+                                                    .height(30.dp)
+                                                    .width(30.dp)
                                             )
 
                                             Text(text = "不写入取件码")
@@ -572,175 +767,316 @@ class MyHomeActivity : ComponentActivity() {
                                         text = "如果该功能开启，您收到的取件码不会被收录到应用数据库。",
                                         modifier = Modifier.padding(10.dp)
                                     )
+
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+
+                                        Row(
+                                            modifier = Modifier.height(70.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Start
+                                        ) {
+
+                                            Image(
+                                                painter = painterResource(id = R.drawable.zz),
+                                                contentDescription = "icon",
+                                                modifier = Modifier
+                                                    .padding(10.dp)
+                                                    .height(30.dp)
+                                                    .width(30.dp)
+                                            )
+
+                                            Text(text = "取件码正则规则设置")
+                                        }
+
+                                       IconButton(
+                                            onClick = {
+                                                      startActivity(
+                                                          Intent(
+                                                              this@MyHomeActivity,
+                                                              RuleActivity::class.java
+                                                          )
+                                                      )
+                                            },
+
+                                        ) {
+                                           Icon(
+                                               imageVector = Icons.Filled.PlayArrow,
+                                               contentDescription = "add",
+                                               tint = MaterialTheme.colorScheme.primary
+                                           )
+                                        }
+                                    }
+
+
+
+
+
                                 }
 
 
-                                Text(text = "所有的格式 均为 凭(.*?)取, 其中(.*?)为取件码的通配符，不可更改，多个正则用|分割")
-                                TextField(
-                                    value = codeEditRegex,
-                                    onValueChange = {
-                                        var bak = it
-                                        codeEditRegex = it
-                                        // 检查是否是合法的正则
 
-                                    },
-                                    label = { Text(text = "取件码正则") },
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
 
-                                    isError = !codeRegexHefa,
-                                    placeholder = {
-                                        Text(text = "格式 凭(.*?)取, 其中(.*?)为取件码的通配符，不可更改，多个正则用|分割")
+                                    Row(
+                                        modifier = Modifier.height(70.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Start
+                                    ) {
+
+                                        Image(
+                                            painter = painterResource(id = R.drawable.nt),
+                                            contentDescription = "icon",
+                                            modifier = Modifier
+                                                .padding(10.dp)
+                                                .height(30.dp)
+                                                .width(30.dp)
+                                        )
+
+                                        Text(text = "通知设置")
                                     }
+
+                                    IconButton(
+                                        onClick = {
+                                            startActivity(
+                                                Intent(
+                                                    this@MyHomeActivity,
+                                                    MainHomeActivity::class.java
+                                                )
+                                            )
+                                        },
+
+                                        ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.PlayArrow,
+                                            contentDescription = "add",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            }
+                        } else if (selectIndex == 3){
+                            // 关于 APP 页面
+
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(10.dp, 120.dp, 10.dp, 10.dp)
+                                    .verticalScroll(rememberScrollState())
+
+                            ) {
+                                Spacer(
+                                    modifier = Modifier
+                                        .statusBarsHeight()
+                                        .fillMaxWidth()
                                 )
+
+
+                                // 显示 Logo
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.fillMaxWidth()
+
+                                ){
+                                    Icon(
+                                        painter =  rememberDrawablePainter(drawable = resources.getDrawable(R.drawable.logo)),
+                                        contentDescription = "icon",
+                                        // 设置颜色
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                            .height(200.dp)
+                                            .width(200.dp)
+                                    )
+                                }
+
+                                // 显示版本号
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(0.dp, 10.dp, 10.dp, 0.dp),
-                                    horizontalArrangement = Arrangement.End
-                                ) {
-                                    Button(
-                                        onClick = {
-                                            try {
-                                                codeEditRegex.toRegex()
-                                                var sharedPreferencesHelper = contxt.getSharedPreferences("regex_manager", MODE_PRIVATE)
-                                                var editor = sharedPreferencesHelper.edit()
-                                                editor.putString("qujianRegex", codeEditRegex)
-                                                editor.apply()
-                                                Toast.makeText(
-                                                    contxt,
-                                                    "保存成功",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                        .padding(6.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.background
+                                        )
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.shapes.medium
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Start
 
-
-                                                codeRegex = codeEditRegex
-                                            } catch (e: Exception) {
-                                                Toast.makeText(
-                                                    contxt,
-                                                    "正则表达式不合法",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                codeEditRegex = codeRegex
-                                            }
-
-
-                                        },
+                                ){
+                                    Text(
+                                        text = "版本号: ${Utils.getVersionName(this@MyHomeActivity)}(${Utils.getVersionCode(this@MyHomeActivity)})",
+                                        fontSize = 20.sp,
                                         modifier = Modifier.padding(10.dp)
-                                    ) {
-                                        Text(text = "保存")
-                                    }
+                                    )
                                 }
-                                var bacCompany = regexCompany
-                                var bacYizhan = regexYizhan
 
-                                TextField(
-                                    value = regexEditCompany,
-                                    onValueChange = {
 
-                                        regexEditCompany = it
-                                    },
-                                    label = { Text(text = "快递公司正则") },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(0.dp, 10.dp, 0.dp, 0.dp),
-                                    placeholder = {
-                                        Text(text = "格式 【(.*?)】")
-                                    }
-                                )
 
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(0.dp, 10.dp, 10.dp, 0.dp),
-                                    horizontalArrangement = Arrangement.End
-                                ) {
-                                    Button(
-                                        onClick = {
-                                            try {
-                                                regexEditCompany.toRegex()
-                                                var sharedPreferencesHelper = contxt.getSharedPreferences("regex_manager", MODE_PRIVATE)
-                                                var editor = sharedPreferencesHelper.edit()
-                                                editor.putString("companyRegex", regexEditCompany)
-                                                editor.apply()
-                                                Toast.makeText(
-                                                    contxt,
-                                                    "保存成功",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                regexCompany = regexEditCompany
+                                        .padding(6.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.background
+                                        )
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.shapes.medium
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Start
 
-                                            } catch (e: Exception) {
-                                                Toast.makeText(
-                                                    contxt,
-                                                    "正则表达式不合法",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                regexEditCompany = regexCompany
-                                            }
-
-                                        },
+                                ){
+                                    Text(
+                                        text = "开发者: ${Utils.getDeveloper(this@MyHomeActivity)}",
+                                        fontSize = 20.sp,
                                         modifier = Modifier.padding(10.dp)
-                                    ) {
-                                        Text(text = "保存")
-                                    }
+                                    )
                                 }
 
-                                TextField(
-                                    value = regexEditYizhan,
-                                    onValueChange = {
-                                        regexEditYizhan = it
-                                    },
-                                    label = { Text(text = "驿站名正则") },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(0.dp, 10.dp, 0.dp, 0.dp),
-                                    placeholder = {
-                                        Text(text = "格式 到(.*?)驿站")
-                                    }
-                                )
 
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(0.dp, 10.dp, 10.dp, 0.dp),
-                                    horizontalArrangement = Arrangement.End
+                                        .padding(6.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.background
+                                        )
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.shapes.medium
+                                        ),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Button(
-                                        onClick = {
-                                           try {
-                                                  regexEditYizhan.toRegex()
-                                                  var sharedPreferencesHelper = contxt.getSharedPreferences("regex_manager", MODE_PRIVATE)
-                                                  var editor = sharedPreferencesHelper.edit()
-                                                  editor.putString("yizhanRegex", regexEditYizhan)
-                                                  editor.apply()
-                                                  Toast.makeText(
-                                                    contxt,
-                                                    "保存成功",
-                                                    Toast.LENGTH_SHORT
-                                                  ).show()
-                                                  regexYizhan = regexEditYizhan
-                                           } catch (e: Exception) {
-                                               Toast.makeText(
-                                                   contxt,
-                                                   "正则表达式不合法",
-                                                   Toast.LENGTH_SHORT
-                                               ).show()
-                                               regexEditYizhan = regexYizhan
-                                           }
-                                        },
+
+                                    Text(
+                                        text = "隐私协议",
+                                        fontSize = 20.sp,
                                         modifier = Modifier.padding(10.dp)
-                                    ) {
-                                        Text(text = "保存")
+                                    )
+
+                                    IconButton(
+                                        onClick = {
+                                            var intent = Intent(this@MyHomeActivity, PrivacyAgreementActivity::class.java)
+                                            intent.putExtra("type", "look")
+
+                                            startActivity(
+                                                intent
+                                            )
+                                        },
+
+                                        ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.PlayArrow,
+                                            contentDescription = "add",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
                                     }
                                 }
 
 
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(6.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.background
+                                        )
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.shapes.medium
+                                        ),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    Text(
+                                        text = "用户协议",
+                                        fontSize = 20.sp,
+                                        modifier = Modifier.padding(10.dp)
+                                    )
+
+                                    IconButton(
+                                        onClick = {
+                                            var intent = Intent(this@MyHomeActivity, UserAgreementActivity::class.java)
+                                            intent.putExtra("type", "look")
+
+                                            startActivity(
+                                                intent
+                                            )
+                                        },
+
+                                        ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.PlayArrow,
+                                            contentDescription = "add",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
 
 
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(6.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.background
+                                        )
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.shapes.medium
+                                        ),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    Text(
+                                        text = "Github开源仓库",
+                                        fontSize = 20.sp,
+                                        modifier = Modifier.padding(10.dp)
+                                    )
+
+                                    IconButton(
+                                        onClick = {
+                                            // 打开浏览器，https://github.com/trueWangSyutung/Dynamic-Notification-for-HyperOS
+                                            var intent = Intent()
+                                            intent.action = "android.intent.action.VIEW"
+                                            intent.data = android.net.Uri.parse("https://github.com/trueWangSyutung/Dynamic-Notification-for-HyperOS" )
+                                            startActivity(intent)
+                                        },
+
+                                        ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.PlayArrow,
+                                            contentDescription = "add",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
 
 
                             }
+
+
+
                         }
                     }
                 }
@@ -756,35 +1092,12 @@ class MyHomeActivity : ComponentActivity() {
 @Composable
 fun AppBar() {
     // 构建一个顶部栏
-    Column {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(
-                    horizontal = 20.dp,
-                )
-                .padding(10.dp),
-            verticalArrangement = Arrangement.Center
+    Text(
+        text = "取件码",
+        fontSize = 40.sp,
+        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 20.dp)
+    )
 
-        ) {
-            Text(text = "取件码",
-                // 设置字体大小
-                fontSize = 30.sp,
-                // 设置字体颜色
-
-            )
-
-            Text(text = "展示你收到的所有取件码",
-                // 设置字体大小
-                fontSize = 15.sp,
-                // 设置字体颜色
-            )
-
-        }
-
-
-    }
 
 }
 

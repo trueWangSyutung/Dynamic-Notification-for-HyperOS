@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         var isFirst = sp.getBoolean("isFirst", true)
 
         if (isFirst){
+
             startActivity(Intent(this, ChecksActivity::class.java))
             finish()
 
@@ -128,7 +129,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("MainActivity", "onCreate: $out")
 
 
-            startActivity(Intent(this, MainHomeActivity::class.java))
+            startActivity(Intent(this, MyHomeActivity::class.java))
             finish()
         }
 
