@@ -2,7 +2,7 @@
 
 _作者：Syutung_
 
-_版本：v1.1.0_
+_版本：v1.2.0_
 
 ## 致谢
 - 感谢 [HyperOS]('https://hyperos.mi.com/')
