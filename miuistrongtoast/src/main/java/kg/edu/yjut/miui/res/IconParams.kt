@@ -1,4 +1,4 @@
-package kg.edu.yjut.litenote.miuiStringToast.res
+package kg.edu.yjut.miui.res
 /*
   * This file is part of HyperCeiler.
 

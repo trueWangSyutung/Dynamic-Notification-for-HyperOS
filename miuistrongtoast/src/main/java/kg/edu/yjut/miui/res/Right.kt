@@ -1,4 +1,5 @@
-package kg.edu.yjut.litenote.miuiStringToast.res
+package kg.edu.yjut.miui.res
+
 /*
   * This file is part of HyperCeiler.
 
@@ -18,7 +19,7 @@ package kg.edu.yjut.litenote.miuiStringToast.res
   * Copyright (C) 2023-2024 HyperCeiler Contributions
 */
 
-class Left {
+class Right {
     private var iconParams: IconParams? = null
     private var textParams: TextParams? = null
 
@@ -30,15 +31,15 @@ class Left {
         this.textParams = textParams
     }
 
-    fun getIconParams(): IconParams? {
-        return iconParams
+    fun getIconParams(): IconParams {
+        return iconParams!!
     }
 
-    fun getTextParams(): TextParams? {
-        return textParams
+    fun getTextParams(): TextParams {
+        return textParams!!
     }
 
     override fun toString(): String {
-        return "Left{iconParams=$iconParams, textParams=$textParams}"
+        return "Right{iconParams=$iconParams, textParams=$textParams}"
     }
 }

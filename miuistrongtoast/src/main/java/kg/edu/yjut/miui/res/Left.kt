@@ -1,5 +1,4 @@
-package kg.edu.yjut.litenote.miuiStringToast.devicesSDK
-
+package kg.edu.yjut.miui.res
 /*
   * This file is part of HyperCeiler.
 
@@ -19,18 +18,27 @@ package kg.edu.yjut.litenote.miuiStringToast.devicesSDK
   * Copyright (C) 2023-2024 HyperCeiler Contributions
 */
 
+class Left {
+    private var iconParams: IconParams? = null
+    private var textParams: TextParams? = null
 
-import kg.edu.yjut.litenote.miuiStringToast.devicesSDK.PropUtils.getProp
-import java.util.Locale
+    fun setIconParams(iconParams: IconParams?) {
+        this.iconParams = iconParams
+    }
 
+    fun setTextParams(textParams: TextParams?) {
+        this.textParams = textParams
+    }
 
-fun getFingerPrint(): String = android.os.Build.FINGERPRINT
-fun getLocale(): String = getProp("ro.product.locale")
-fun getLanguage(): String = Locale.getDefault().toString()
-fun getBoard(): String = android.os.Build.BOARD
-fun getSoc(): String = getProp("ro.board.platform")
-fun getDeviceName(): String = android.os.Build.DEVICE
-fun getModelName(): String = android.os.Build.MODEL
-fun getBrand(): String = android.os.Build.BRAND
-fun getManufacture(): String = android.os.Build.MANUFACTURER
-fun getSerial(): String = getProp("ro.serialno").replace("\n", "")
+    fun getIconParams(): IconParams? {
+        return iconParams
+    }
+
+    fun getTextParams(): TextParams? {
+        return textParams
+    }
+
+    override fun toString(): String {
+        return "Left{iconParams=$iconParams, textParams=$textParams}"
+    }
+}

@@ -1,9 +1,6 @@
 package kg.edu.yjut.litenote
 
-import android.annotation.SuppressLint
-import android.app.ActivityManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -14,21 +11,17 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import kg.edu.yjut.litenote.activity.ChecksActivity
-import kg.edu.yjut.litenote.activity.MainHomeActivity
 import kg.edu.yjut.litenote.activity.MyHomeActivity
 import kg.edu.yjut.litenote.activity.UpdateActivity
-import kg.edu.yjut.litenote.activity.UserAgreementActivity
 import kg.edu.yjut.litenote.bean.HttpBeam
 import kg.edu.yjut.litenote.helper.RegexMangerHelper
-import kg.edu.yjut.litenote.miuiStringToast.MiuiStringToast
-import kg.edu.yjut.litenote.miuiStringToast.ToastConfig
+import kg.edu.yjut.miui.MiuiStringToast
+import kg.edu.yjut.miui.ToastConfig
 import kg.edu.yjut.litenote.service.GuardNotificationListenerService
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import okhttp3.Call
@@ -36,7 +29,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
@@ -90,8 +82,8 @@ class MainActivity : AppCompatActivity() {
                                 PendingIntent.FLAG_UPDATE_CURRENT
                             )
 
-                            MiuiStringToast.showStringToast(
-                                this, ToastConfig(
+                            kg.edu.yjut.miui.MiuiStringToast.showStringToast(
+                                this, kg.edu.yjut.miui.ToastConfig(
                                     "有新版本",
                                     "#1296DB",
                                     "dd",

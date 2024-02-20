@@ -1,5 +1,4 @@
-package kg.edu.yjut.litenote.miuiStringToast.res
-
+package kg.edu.yjut.miui.res
 /*
   * This file is part of HyperCeiler.
 
@@ -19,27 +18,27 @@ package kg.edu.yjut.litenote.miuiStringToast.res
   * Copyright (C) 2023-2024 HyperCeiler Contributions
 */
 
-class Right {
-    private var iconParams: IconParams? = null
-    private var textParams: TextParams? = null
+class StringToastBean {
+    private var left: Left? = null
+    private var right: Right? = null
 
-    fun setIconParams(iconParams: IconParams?) {
-        this.iconParams = iconParams
+    fun getLeft(): Left {
+        return left!!
     }
 
-    fun setTextParams(textParams: TextParams?) {
-        this.textParams = textParams
+    fun setLeft(left: Left?) {
+        this.left = left
     }
 
-    fun getIconParams(): IconParams {
-        return iconParams!!
+    fun getRight(): Right {
+        return right!!
     }
 
-    fun getTextParams(): TextParams {
-        return textParams!!
+    fun setRight(right: Right?) {
+        this.right = right
     }
 
-    override fun toString(): String {
-        return "Right{iconParams=$iconParams, textParams=$textParams}"
+    fun getStringToastBundle(): StringToastBundle {
+        return StringToastBundle()
     }
 }

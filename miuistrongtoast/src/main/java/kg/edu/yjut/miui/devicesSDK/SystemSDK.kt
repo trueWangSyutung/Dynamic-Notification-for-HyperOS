@@ -1,4 +1,4 @@
-package kg.edu.yjut.litenote.miuiStringToast.res
+package kg.edu.yjut.miui.devicesSDK
 /*
   * This file is part of HyperCeiler.
 
@@ -18,27 +18,22 @@ package kg.edu.yjut.litenote.miuiStringToast.res
   * Copyright (C) 2023-2024 HyperCeiler Contributions
 */
 
-class StringToastBean {
-    private var left: Left? = null
-    private var right: Right? = null
+import android.os.Build
+import kg.edu.yjut.miui.devicesSDK.PropUtils.getProp
 
-    fun getLeft(): Left {
-        return left!!
-    }
+/**
+获取设备 Android 版本 、MIUI 版本 、HyperOS 版本 等
+并判断设备指定类型
+ */
 
-    fun setLeft(left: Left?) {
-        this.left = left
-    }
+// ----- HyperOS ----------------------------------------------------------------------------------
 
-    fun getRight(): Right {
-        return right!!
-    }
+fun getHyperOSVersion(): Float = when (getProp("ro.mi.os.version.name")) {
+    "OS1.0" -> 1f
+    else -> 0f
+}
 
-    fun setRight(right: Right?) {
-        this.right = right
-    }
 
-    fun getStringToastBundle(): StringToastBundle {
-        return StringToastBundle()
-    }
+fun isMoreHyperOSVersion(version: Float): Boolean {
+    return getHyperOSVersion() >= version
 }

@@ -1,4 +1,4 @@
-package kg.edu.yjut.litenote.miuiStringToast
+package kg.edu.yjut.miui
 
 import android.app.PendingIntent
 import android.widget.Toast

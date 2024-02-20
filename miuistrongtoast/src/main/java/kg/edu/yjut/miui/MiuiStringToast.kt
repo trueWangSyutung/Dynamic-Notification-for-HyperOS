@@ -1,4 +1,4 @@
-package kg.edu.yjut.litenote.miuiStringToast
+package kg.edu.yjut.miui
 /*
   * This file is part of HyperCeiler.
 
@@ -19,7 +19,6 @@ package kg.edu.yjut.litenote.miuiStringToast
 */
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
@@ -27,13 +26,13 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.google.gson.Gson
-import kg.edu.yjut.litenote.miuiStringToast.devicesSDK.isMoreHyperOSVersion
-import kg.edu.yjut.litenote.miuiStringToast.res.IconParams
-import kg.edu.yjut.litenote.miuiStringToast.res.Left
-import kg.edu.yjut.litenote.miuiStringToast.res.Right
-import kg.edu.yjut.litenote.miuiStringToast.res.StringToastBean
-import kg.edu.yjut.litenote.miuiStringToast.res.StringToastBundle
-import kg.edu.yjut.litenote.miuiStringToast.res.TextParams
+import kg.edu.yjut.miui.devicesSDK.isMoreHyperOSVersion
+import kg.edu.yjut.miui.res.IconParams
+import kg.edu.yjut.miui.res.Left
+import kg.edu.yjut.miui.res.Right
+import kg.edu.yjut.miui.res.StringToastBean
+import kg.edu.yjut.miui.res.StringToastBundle
+import kg.edu.yjut.miui.res.TextParams
 import java.lang.reflect.InvocationTargetException
 
 object MiuiStringToast {
@@ -121,17 +120,11 @@ object MiuiStringToast {
     }
 
     object Category {
-        const val RAW = "raw"
         const val DRAWABLE = "drawable"
-        const val FILE = "file"
-        const val MIPMAP = "mipmap"
     }
 
     object FileType {
-        const val MP4 = "mp4"
-        const val PNG = "png"
         const val SVG = "svg"
-        const val WEBP = "webp"
     }
 
     enum class StrongToastCategory(var value: String) {

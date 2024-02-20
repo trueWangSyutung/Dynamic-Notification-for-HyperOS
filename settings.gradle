@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "Lite Note"
 include ':app'
 include ':miuiToast'
+include ':miuistrongtoast'
