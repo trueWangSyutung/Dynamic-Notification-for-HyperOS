@@ -2,6 +2,7 @@ package kg.edu.yjut.litenote
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
@@ -18,13 +19,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import kg.edu.yjut.litenote.activity.ChecksActivity
 import kg.edu.yjut.litenote.activity.MainHomeActivity
 import kg.edu.yjut.litenote.activity.MyHomeActivity
+import kg.edu.yjut.litenote.activity.UpdateActivity
 import kg.edu.yjut.litenote.activity.UserAgreementActivity
+import kg.edu.yjut.litenote.bean.HttpBeam
 import kg.edu.yjut.litenote.helper.RegexMangerHelper
+import kg.edu.yjut.litenote.miuiStringToast.MiuiStringToast
+import kg.edu.yjut.litenote.miuiStringToast.ToastConfig
 import kg.edu.yjut.litenote.service.GuardNotificationListenerService
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
+import okhttp3.Call
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 import kotlin.concurrent.thread
 
 
@@ -47,6 +58,56 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return false
+    }
+
+    fun checkUpdate(
+        context: Context,
+    ) {
+        // 获取当前版本 code
+        val currentVersionCode = context.packageManager.getPackageInfo(context.packageName, 0).versionCode
+        var url = "https://ota.yjut.edu.kg/checkUpdate?version_code=${currentVersionCode}&apk_type=hyperos"
+        val okHttpClient = OkHttpClient()
+        val request: Request = Request.Builder()
+            .url(url)
+            .build()
+        val call: Call = okHttpClient.newCall(request)
+        Thread {
+            try {
+                val response: Response = call.execute()
+                val result = response.body()!!.string()
+                // 解析json Gson
+                var gson = Gson()
+                var root = gson.fromJson(result, HttpBeam::class.java)
+                // 如果code为200，表示请求成功
+                if (root.code == 200) {
+                    runOnUiThread {
+                        if (root.msg == "success") {
+                            // 如果有更新
+                            var pendingIntent = PendingIntent.getActivity(
+                                context,
+                                0,
+                                Intent(context, UpdateActivity::class.java),
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                            )
+
+                            MiuiStringToast.showStringToast(
+                                this, ToastConfig(
+                                    "有新版本",
+                                    "#1296DB",
+                                    "dd",
+                                    6000L,
+                                    pendingIntent
+                                )
+                            )
+                        }else{
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }.start()
+
     }
 
     @RequiresApi(Build.VERSION_CODES.P  )

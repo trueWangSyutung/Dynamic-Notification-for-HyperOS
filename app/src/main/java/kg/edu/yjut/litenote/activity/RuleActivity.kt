@@ -33,19 +33,19 @@ import kg.edu.yjut.litenote.activity.ui.theme.LiteNoteTheme
 import kg.edu.yjut.litenote.utils.UISetting
 
 class RuleActivity : ComponentActivity() {
-    var codeRegex = "【(.*?)】到(.*?)凭(.*?)"
-    var regexCompany = "【(.*?)】"
-    var regexYizhan = "到(.*?)凭"
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var sb = getSharedPreferences("regex_manager", MODE_PRIVATE)
-
-        codeRegex = sb.getString("qujianRegex", "凭(.*?)在|凭(.*?)至|凭(.*?)到|凭(.*?)取")!!
-        regexCompany = sb.getString("companyRegex", "【(.*?)】")!!
-        regexYizhan = sb.getString("yizhanRegex", "到(.*?)驿站")!!
+        var codeRegex = mutableStateOf(sb.getString("qujianRegex", "凭(.*?)在|凭(.*?)至|凭(.*?)到|凭(.*?)取")!!)
+        var regexCompany = mutableStateOf( sb.getString("companyRegex", "【(.*?)】")!!)
+        var regexYizhan = mutableStateOf(sb.getString("yizhanRegex", "到(.*?)驿站")!!)
+        println(
+            "codeRegex = ${codeRegex.value} regexCompany = ${regexCompany.value} regexYizhan = ${regexYizhan.value}"
+        )
         var contxt = this
 
         setContent {
@@ -60,21 +60,15 @@ class RuleActivity : ComponentActivity() {
                     Scaffold(
 
                     ){
-                        var codeEditRegex by remember {
-                            mutableStateOf(codeRegex)
-                        }
-                        var regexEditCompany by remember {
-                            mutableStateOf(regexCompany)
-                        }
-                        var regexEditYizhan by remember {
-                            mutableStateOf(regexYizhan)
-                        }
+                       var bac_code = codeRegex.value
+                          var bac_company = regexCompany.value
+                            var bac_yizhan = regexYizhan.value
 
 
                        Column(
                             modifier = Modifier
-                                 .fillMaxSize()
-                                 .padding(10.dp),
+                                .fillMaxSize()
+                                .padding(10.dp),
                             verticalArrangement = Arrangement.Top,
 
                        ) {
@@ -85,7 +79,9 @@ class RuleActivity : ComponentActivity() {
                                title = {
                                    Text(text = "规则设置")
                                },
-                               modifier = Modifier.fillMaxWidth().padding(0.dp, 10.dp, 0.dp, 10.dp)
+                               modifier = Modifier
+                                   .fillMaxWidth()
+                                   .padding(0.dp, 10.dp, 0.dp, 10.dp)
                            )
                            Text(
                                text = "所有的格式 均为 凭(.*?)取, 其中(.*?)为取件码的通配符，不可更改，多个正则用|分割",
@@ -93,10 +89,9 @@ class RuleActivity : ComponentActivity() {
 
                            )
                            TextField(
-                               value = codeEditRegex,
+                               value = codeRegex.value,
                                onValueChange = {
-                                   var bak = it
-                                   codeEditRegex = it
+                                   codeRegex.value = it
                                    // 检查是否是合法的正则
 
                                },
@@ -117,10 +112,10 @@ class RuleActivity : ComponentActivity() {
                                Button(
                                    onClick = {
                                        try {
-                                           codeEditRegex.toRegex()
+                                           codeRegex.value.toRegex()
                                            var sharedPreferencesHelper = contxt.getSharedPreferences("regex_manager", MODE_PRIVATE)
                                            var editor = sharedPreferencesHelper.edit()
-                                           editor.putString("qujianRegex", codeEditRegex)
+                                           editor.putString("qujianRegex", codeRegex.value)
                                            editor.apply()
                                            Toast.makeText(
                                                contxt,
@@ -128,15 +123,15 @@ class RuleActivity : ComponentActivity() {
                                                Toast.LENGTH_SHORT
                                            ).show()
 
+                                           bac_code = codeRegex.value
 
-                                           codeRegex = codeEditRegex
                                        } catch (e: Exception) {
                                            Toast.makeText(
                                                contxt,
                                                "正则表达式不合法",
                                                Toast.LENGTH_SHORT
                                            ).show()
-                                           codeEditRegex = codeRegex
+                                           codeRegex.value = bac_code
                                        }
 
 
@@ -146,14 +141,12 @@ class RuleActivity : ComponentActivity() {
                                    Text(text = "保存")
                                }
                            }
-                           var bacCompany = regexCompany
-                           var bacYizhan = regexYizhan
 
                            TextField(
-                               value = regexEditCompany,
+                               value = regexCompany.value,
                                onValueChange = {
 
-                                   regexEditCompany = it
+                                   regexCompany.value = it
                                },
                                label = { Text(text = "快递公司正则") },
                                modifier = Modifier
@@ -173,17 +166,17 @@ class RuleActivity : ComponentActivity() {
                                Button(
                                    onClick = {
                                        try {
-                                           regexEditCompany.toRegex()
+                                           regexCompany.value.toRegex()
                                            var sharedPreferencesHelper = contxt.getSharedPreferences("regex_manager", MODE_PRIVATE)
                                            var editor = sharedPreferencesHelper.edit()
-                                           editor.putString("companyRegex", regexEditCompany)
+                                           editor.putString("companyRegex", regexCompany.value)
                                            editor.apply()
                                            Toast.makeText(
                                                contxt,
                                                "保存成功",
                                                Toast.LENGTH_SHORT
                                            ).show()
-                                           regexCompany = regexEditCompany
+                                           bac_company = regexCompany.value
 
                                        } catch (e: Exception) {
                                            Toast.makeText(
@@ -191,7 +184,7 @@ class RuleActivity : ComponentActivity() {
                                                "正则表达式不合法",
                                                Toast.LENGTH_SHORT
                                            ).show()
-                                           regexEditCompany = regexCompany
+                                           regexCompany.value = bac_company
                                        }
 
                                    },
@@ -202,9 +195,9 @@ class RuleActivity : ComponentActivity() {
                            }
 
                            TextField(
-                               value = regexEditYizhan,
+                               value = regexYizhan.value,
                                onValueChange = {
-                                   regexEditYizhan = it
+                                   regexYizhan.value = it
                                },
                                label = { Text(text = "驿站名正则") },
                                modifier = Modifier
@@ -224,24 +217,24 @@ class RuleActivity : ComponentActivity() {
                                Button(
                                    onClick = {
                                        try {
-                                           regexEditYizhan.toRegex()
+                                           regexYizhan.value.toRegex()
                                            var sharedPreferencesHelper = contxt.getSharedPreferences("regex_manager", MODE_PRIVATE)
                                            var editor = sharedPreferencesHelper.edit()
-                                           editor.putString("yizhanRegex", regexEditYizhan)
+                                           editor.putString("yizhanRegex", regexYizhan.value)
                                            editor.apply()
                                            Toast.makeText(
                                                contxt,
                                                "保存成功",
                                                Toast.LENGTH_SHORT
                                            ).show()
-                                           regexYizhan = regexEditYizhan
+                                           bac_yizhan = regexYizhan.value
                                        } catch (e: Exception) {
                                            Toast.makeText(
                                                contxt,
                                                "正则表达式不合法",
                                                Toast.LENGTH_SHORT
                                            ).show()
-                                           regexEditYizhan = regexYizhan
+                                           regexYizhan.value = bac_yizhan
                                        }
                                    },
                                    modifier = Modifier.padding(10.dp)

@@ -19,6 +19,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
@@ -205,7 +206,12 @@ fun HomeLogItem(
                 )
                 Text(
                     text = logBeam.content,
-                    fontSize = 10.sp
+                    fontSize = 10.sp,
+                    maxLines = 2,
+                    softWrap = true,
+                    // 行距
+                    lineHeight = 10.sp,
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 Text(
@@ -292,6 +298,7 @@ fun CodeContainer(
     kd : String = "测试快递",
     status : Int = 1,
     id:Int=0,
+    widthDp : Float = 300f,
     click : () -> Unit = {}
 ) {
     Row(
@@ -308,7 +315,9 @@ fun CodeContainer(
         horizontalArrangement = Arrangement.SpaceBetween
     ){
         Column(
-
+            modifier = Modifier
+                .width(((widthDp*2)/3).dp)
+                .fillMaxHeight()
         ){
             Text(text = code,
                 fontSize = 35.sp,
@@ -328,8 +337,7 @@ fun CodeContainer(
             onClick = click,
             modifier = Modifier
                 .fillMaxHeight()
-                .width(80.dp)
-
+                .width(((widthDp*1)/3).dp)
 
         ){
             if (isStatus){
@@ -412,9 +420,7 @@ class MyHomeActivity : ComponentActivity() {
 
 
 
-    var codeRegex = "【(.*?)】到(.*?)凭(.*?)"
-    var regexCompany = "【(.*?)】"
-    var regexYizhan = "到(.*?)凭"
+
     var isWriteCander = mutableStateOf(false)
     var loglists = mutableStateListOf<LogBeam> ()
     val logpage = mutableStateOf(1)
@@ -439,11 +445,8 @@ class MyHomeActivity : ComponentActivity() {
         var contxt = this
 
         // 加载sharepreference
-        var sb = contxt.getSharedPreferences("regex_manager", MODE_PRIVATE)
 
-        codeRegex = sb.getString("qujianRegex", "凭(.*?)在|凭(.*?)至|凭(.*?)到|凭(.*?)取")!!
-        regexCompany = sb.getString("companyRegex", "【(.*?)】")!!
-        regexYizhan = sb.getString("yizhanRegex", "到(.*?)驿站")!!
+        var widthDp = Resources.getSystem().displayMetrics.widthPixels / Resources.getSystem().displayMetrics.density
 
         loglists.addAll(CodeDatebaseUtils.getLogsByTime(
             db, logpage.value
@@ -671,7 +674,7 @@ class MyHomeActivity : ComponentActivity() {
 
                                         for (i in list) {
                                             CodeContainer(i.code, i.yz, i.kd,i.status,
-                                                i.id
+                                                i.id,widthDp
                                             ) {
                                                 if (i.status == 0){
                                                     CodeDatebaseUtils.updateStatus(db, i.id, 1)
@@ -825,7 +828,14 @@ class MyHomeActivity : ComponentActivity() {
 
 
                                     Row(
-                                        modifier = Modifier.fillMaxWidth(),
+                                        modifier = Modifier.fillMaxWidth().clickable {
+                                            startActivity(
+                                                Intent(
+                                                    this@MyHomeActivity,
+                                                    RuleActivity::class.java
+                                                )
+                                            )
+                                        },
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -848,23 +858,6 @@ class MyHomeActivity : ComponentActivity() {
                                             Text(text = "取件码正则规则设置")
                                         }
 
-                                       IconButton(
-                                            onClick = {
-                                                      startActivity(
-                                                          Intent(
-                                                              this@MyHomeActivity,
-                                                              RuleActivity::class.java
-                                                          )
-                                                      )
-                                            },
-
-                                        ) {
-                                           Icon(
-                                               imageVector = Icons.Filled.PlayArrow,
-                                               contentDescription = "add",
-                                               tint = MaterialTheme.colorScheme.primary
-                                           )
-                                        }
                                     }
 
 
@@ -876,7 +869,14 @@ class MyHomeActivity : ComponentActivity() {
 
 
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth().clickable {
+                                        startActivity(
+                                            Intent(
+                                                this@MyHomeActivity,
+                                                MainHomeActivity::class.java
+                                            )
+                                        )
+                                    },
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -899,23 +899,7 @@ class MyHomeActivity : ComponentActivity() {
                                         Text(text = "通知设置")
                                     }
 
-                                    IconButton(
-                                        onClick = {
-                                            startActivity(
-                                                Intent(
-                                                    this@MyHomeActivity,
-                                                    MainHomeActivity::class.java
-                                                )
-                                            )
-                                        },
 
-                                        ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.PlayArrow,
-                                            contentDescription = "add",
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
                                 }
                             }
                         } else if (selectIndex == 3){
@@ -1014,7 +998,14 @@ class MyHomeActivity : ComponentActivity() {
                                             1.dp,
                                             MaterialTheme.colorScheme.primary,
                                             MaterialTheme.shapes.medium
-                                        ),
+                                        ).clickable {
+                                            var intent = Intent(this@MyHomeActivity, PrivacyAgreementActivity::class.java)
+                                            intent.putExtra("type", "look")
+
+                                            startActivity(
+                                                intent
+                                            )
+                                        },
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -1025,23 +1016,7 @@ class MyHomeActivity : ComponentActivity() {
                                         modifier = Modifier.padding(10.dp)
                                     )
 
-                                    IconButton(
-                                        onClick = {
-                                            var intent = Intent(this@MyHomeActivity, PrivacyAgreementActivity::class.java)
-                                            intent.putExtra("type", "look")
 
-                                            startActivity(
-                                                intent
-                                            )
-                                        },
-
-                                        ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.PlayArrow,
-                                            contentDescription = "add",
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
                                 }
 
 
@@ -1056,7 +1031,14 @@ class MyHomeActivity : ComponentActivity() {
                                             1.dp,
                                             MaterialTheme.colorScheme.primary,
                                             MaterialTheme.shapes.medium
-                                        ),
+                                        ).clickable {
+                                            var intent = Intent(this@MyHomeActivity, UserAgreementActivity::class.java)
+                                            intent.putExtra("type", "look")
+
+                                            startActivity(
+                                                intent
+                                            )
+                                        },
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -1067,23 +1049,7 @@ class MyHomeActivity : ComponentActivity() {
                                         modifier = Modifier.padding(10.dp)
                                     )
 
-                                    IconButton(
-                                        onClick = {
-                                            var intent = Intent(this@MyHomeActivity, UserAgreementActivity::class.java)
-                                            intent.putExtra("type", "look")
 
-                                            startActivity(
-                                                intent
-                                            )
-                                        },
-
-                                        ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.PlayArrow,
-                                            contentDescription = "add",
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
                                 }
 
 
@@ -1098,7 +1064,12 @@ class MyHomeActivity : ComponentActivity() {
                                             1.dp,
                                             MaterialTheme.colorScheme.primary,
                                             MaterialTheme.shapes.medium
-                                        ),
+                                        ).clickable {
+                                            var intent = Intent()
+                                            intent.action = "android.intent.action.VIEW"
+                                            intent.data = android.net.Uri.parse("https://github.com/trueWangSyutung/Dynamic-Notification-for-HyperOS" )
+                                            startActivity(intent)
+                                        },
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -1109,22 +1080,36 @@ class MyHomeActivity : ComponentActivity() {
                                         modifier = Modifier.padding(10.dp)
                                     )
 
-                                    IconButton(
-                                        onClick = {
-                                            // 打开浏览器，https://github.com/trueWangSyutung/Dynamic-Notification-for-HyperOS
-                                            var intent = Intent()
-                                            intent.action = "android.intent.action.VIEW"
-                                            intent.data = android.net.Uri.parse("https://github.com/trueWangSyutung/Dynamic-Notification-for-HyperOS" )
-                                            startActivity(intent)
-                                        },
 
-                                        ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.PlayArrow,
-                                            contentDescription = "add",
-                                            tint = MaterialTheme.colorScheme.primary
+                                }
+
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(6.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.background
                                         )
-                                    }
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.shapes.medium
+                                        ).clickable {
+                                            startActivity(
+                                                Intent(this@MyHomeActivity, UpdateActivity::class.java)
+                                            )
+                                        },
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    Text(
+                                        text = "检查更新",
+                                        fontSize = 20.sp,
+                                        modifier = Modifier.padding(10.dp)
+                                    )
+
                                 }
 
 
