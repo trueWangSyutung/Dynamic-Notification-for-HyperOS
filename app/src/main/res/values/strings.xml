@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">灵动通知 For HyperOS</string>
+    <string name="app_name">灵动通知</string>
     <string name="service_name">灵动通知</string>
     <string name="notes">为了保证服务的正常运行，请您务必开启通知读取权限、自启动权限、后台无限制权限、该应用不申请网络权限、您的所有通知信息将不会上传到服务器</string>
-    <string name="title_activity_my_home">灵动通知 For HyperOS</string>
+    <string name="title_activity_my_home">灵动通知</string>
     <string name="appwidget_text">桌面取件码</string>
     <string name="add_widget">桌面取件码</string>
     <string name="app_widget_description">您收到的取件码将放置于桌面上</string>
@@ -14,4 +14,5 @@
     <string name="title_activity_log">LogActivity</string>
     <string name="title_activity_rule">RuleActivity</string>
     <string name="title_activity_update">UpdateActivity</string>
+    <string name="title_activity_local_settings">LocalSettingsActivity</string>
 </resources>

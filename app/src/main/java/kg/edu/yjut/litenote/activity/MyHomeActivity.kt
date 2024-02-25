@@ -3,6 +3,7 @@ package kg.edu.yjut.litenote.activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
@@ -96,6 +97,7 @@ import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.bean.Code
 import kg.edu.yjut.litenote.bean.LogBeam
 import kg.edu.yjut.litenote.helper.RegexMangerHelper
+import kg.edu.yjut.litenote.miui.devicesSDK.getHyperOSVersion
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import kg.edu.yjut.litenote.utils.UISetting
 import kg.edu.yjut.litenote.utils.Utils
@@ -163,9 +165,22 @@ fun HomeLogItem(
     ) {
         // 获取包名对应的应用名称、图标
         var appManager = context.packageManager
-        var appInfo = appManager.getApplicationInfo(logBeam.packageName, 0)
-        var appName = appManager.getApplicationLabel(appInfo).toString()
-        var appIcon = appManager.getApplicationIcon(appInfo)
+        // 判断 app 是否已经安装
+
+        var isAppInstalled = Utils.isAppInstalled(context, logBeam.packageName)
+        var appInfo: ApplicationInfo? = null;
+        var appName = "未知应用"
+        var appIcon = context.resources.getDrawable(R.mipmap.ic_launcher)
+        try{
+             appInfo = appManager.getApplicationInfo(logBeam.packageName, 0)
+             appName = appManager.getApplicationLabel(appInfo).toString()
+             appIcon = appManager.getApplicationIcon(appInfo)
+        } catch (e: Exception){
+             appName = "已删除应用"
+             appIcon = context.resources.getDrawable(R.mipmap.ic_launcher)
+             appInfo = null
+        }
+
 
         // 获取屏幕宽度 dp
         var screenWidth = Resources.getSystem().displayMetrics.widthPixels / Resources.getSystem().displayMetrics.density
@@ -475,7 +490,6 @@ class MyHomeActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .shadow(10.dp)
-                                    .height(100.dp)
 
                                     .background(MaterialTheme.colorScheme.primary),
 
@@ -510,7 +524,7 @@ class MyHomeActivity : ComponentActivity() {
                                                     contentDescription = label,
                                                     tint = if (selectIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                                 )
-                                                Text(text = label, fontSize = 10.sp)
+                                                Text(text = label, fontSize = 8.sp)
                                             }
 
                                         }
@@ -901,6 +915,43 @@ class MyHomeActivity : ComponentActivity() {
 
 
                                 }
+
+
+                                if (getHyperOSVersion()==0f){
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().clickable {
+                                            startActivity(
+                                                Intent(
+                                                    this@MyHomeActivity,
+                                                    LocalSettingsActivity::class.java
+                                                )
+                                            )
+                                        },
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+
+                                        Row(
+                                            modifier = Modifier.height(70.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Start
+                                        ) {
+
+                                            Image(
+                                                painter = painterResource(id = R.drawable.dd),
+                                                contentDescription = "icon",
+                                                modifier = Modifier
+                                                    .padding(10.dp)
+                                                    .height(30.dp)
+                                                    .width(30.dp)
+                                            )
+
+                                            Text(text = "灵动岛位置设置")
+                                        }
+
+
+                                    }
+                                }
                             }
                         } else if (selectIndex == 3){
                             // 关于 APP 页面
@@ -909,7 +960,10 @@ class MyHomeActivity : ComponentActivity() {
                             Column(
                                 modifier = Modifier
                                     .padding(10.dp, 120.dp, 10.dp, 10.dp)
-                                    .verticalScroll(rememberScrollState())
+                                    .verticalScroll(
+                                        rememberScrollState()
+                                    ),
+
 
                             ) {
                                 Spacer(
@@ -923,7 +977,6 @@ class MyHomeActivity : ComponentActivity() {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier.fillMaxWidth()
-
                                 ){
                                     Icon(
                                         painter =  rememberDrawablePainter(drawable = resources.getDrawable(R.drawable.logo)),

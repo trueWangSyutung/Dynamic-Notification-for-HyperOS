@@ -51,6 +51,16 @@ public class Utils {
     }
 
 
+    public static Boolean isAppInstalled(Context context, String packageName) {
+        try {
+            context.getPackageManager().getPackageInfo(packageName, 0);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
     // 获取应用版本号
     public static String getVersionName(Context context) {
         String versionName = "1.0.0";

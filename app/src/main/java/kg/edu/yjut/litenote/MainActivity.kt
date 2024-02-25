@@ -20,8 +20,8 @@ import kg.edu.yjut.litenote.activity.MyHomeActivity
 import kg.edu.yjut.litenote.activity.UpdateActivity
 import kg.edu.yjut.litenote.bean.HttpBeam
 import kg.edu.yjut.litenote.helper.RegexMangerHelper
-import kg.edu.yjut.miui.MiuiStringToast
-import kg.edu.yjut.miui.ToastConfig
+import kg.edu.yjut.litenote.miui.MiuiStringToast
+import kg.edu.yjut.litenote.miui.ToastConfig
 import kg.edu.yjut.litenote.service.GuardNotificationListenerService
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import okhttp3.Call
@@ -82,8 +82,8 @@ class MainActivity : AppCompatActivity() {
                                 PendingIntent.FLAG_UPDATE_CURRENT
                             )
 
-                            kg.edu.yjut.miui.MiuiStringToast.showStringToast(
-                                this, kg.edu.yjut.miui.ToastConfig(
+                            MiuiStringToast.showStringToast(
+                                this, ToastConfig(
                                     "有新版本",
                                     "#1296DB",
                                     "dd",

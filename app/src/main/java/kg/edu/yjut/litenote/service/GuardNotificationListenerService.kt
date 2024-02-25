@@ -20,8 +20,8 @@ import androidx.core.app.NotificationCompat
 import kg.edu.yjut.litenote.MainActivity
 import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.bean.ChannelInfo
-import kg.edu.yjut.miui.MiuiStringToast
-import kg.edu.yjut.miui.ToastConfig
+import kg.edu.yjut.litenote.miui.MiuiStringToast
+import kg.edu.yjut.litenote.miui.ToastConfig
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import kg.edu.yjut.litenote.utils.MyStoreTools
 import kg.edu.yjut.litenote.utils.getIcons
@@ -158,8 +158,8 @@ class GuardNotificationListenerService : NotificationListenerService() {
 
                         } else {
                             // 发送竖屏通知，竖屏可以使用，灵动岛
-                            kg.edu.yjut.miui.MiuiStringToast.showStringToast(this,
-                                kg.edu.yjut.miui.ToastConfig(
+                            MiuiStringToast.showStringToast(this,
+                                ToastConfig(
                                     "取件码：${codeStr}，请前往${yizhanStr}取件",
                                     "#1296DB",
                                     "dd",
@@ -273,8 +273,8 @@ class GuardNotificationListenerService : NotificationListenerService() {
                                 var isPad = MyStoreTools.isPad(this)
 
                                 if (isPad) {
-                                    kg.edu.yjut.miui.MiuiStringToast.showStringToast(
-                                        this, kg.edu.yjut.miui.ToastConfig(
+                                    MiuiStringToast.showStringToast(
+                                        this, ToastConfig(
                                             "${title} : ${content}",
                                             suppsedColorStr[packageName]!!,
                                             supposedIconMap[packageName]!!,
@@ -296,8 +296,8 @@ class GuardNotificationListenerService : NotificationListenerService() {
                             } else {
                                 // 发送竖屏通知，竖屏可以使用，灵动岛
 
-                                kg.edu.yjut.miui.MiuiStringToast.showStringToast(
-                                    this, kg.edu.yjut.miui.ToastConfig(
+                                MiuiStringToast.showStringToast(
+                                    this, ToastConfig(
                                         "${title} : ${content}",
                                         suppsedColorStr[packageName]!!,
                                         supposedIconMap[packageName]!!,
@@ -386,8 +386,8 @@ class GuardNotificationListenerService : NotificationListenerService() {
                                 var isPad = MyStoreTools.isPad(this)
 
                                 if (isPad) {
-                                    kg.edu.yjut.miui.MiuiStringToast.showStringToast(
-                                        this, kg.edu.yjut.miui.ToastConfig(
+                                    MiuiStringToast.showStringToast(
+                                        this, ToastConfig(
                                             "${title} : ${content}",
                                             "#FFFFFF",
                                             "logo",
@@ -408,8 +408,8 @@ class GuardNotificationListenerService : NotificationListenerService() {
 
                             } else {
                                 // 发送竖屏通知，竖屏可以使用，灵动岛
-                                kg.edu.yjut.miui.MiuiStringToast.showStringToast(
-                                    this, kg.edu.yjut.miui.ToastConfig(
+                                MiuiStringToast.showStringToast(
+                                    this, ToastConfig(
                                         "${title} : ${content}",
                                         "#FFFFFF",
                                         "logo",
@@ -537,8 +537,8 @@ class GuardNotificationListenerService : NotificationListenerService() {
         //  为了过滤掉该应用本身的通知
         Log.d(TAG, "onCreate: $syatemApplicationsPackageName")
 
-        kg.edu.yjut.miui.MiuiStringToast.showStringToast(
-            this, kg.edu.yjut.miui.ToastConfig(
+        MiuiStringToast.showStringToast(
+            this, ToastConfig(
                 "灵动通知 For HyperOS 通知监听服务已启动",
                 "#1296DB",
                 "dd",
@@ -546,6 +546,7 @@ class GuardNotificationListenerService : NotificationListenerService() {
                 pendingIntent
             )
         )
+
 
 
     }
@@ -577,6 +578,7 @@ class GuardNotificationListenerService : NotificationListenerService() {
 
         )
         var showMethod1 = miuiToast.getMethod("showCustomStrongToast", strongToastModel)
+
 
 
 
