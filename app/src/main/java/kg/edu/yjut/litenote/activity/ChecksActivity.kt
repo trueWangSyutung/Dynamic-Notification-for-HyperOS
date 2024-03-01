@@ -118,10 +118,10 @@ fun StartUse(
 
 
 class ChecksActivity : ComponentActivity() {
-    var isAgreeUA = false
-    var isAgreePA = false
-    var isNotificationListenersEnabledFlag = false
-    var isCanDrawOverlays = false
+    var isAgreeUA =  mutableStateOf(false)
+    var isAgreePA =  mutableStateOf(false)
+    var isNotificationListenersEnabledFlag = mutableStateOf(false)
+    var isCanDrawOverlays = mutableStateOf(false)
     fun isNotificationListenersEnabled(): Boolean {
         val pkgName = packageName
         // 如果 api
@@ -150,20 +150,20 @@ class ChecksActivity : ComponentActivity() {
 
         super.onRestart()
         var sp = getSharedPreferences("config", MODE_PRIVATE)
-        isAgreeUA = sp.getBoolean("isAgreeUA", false)
-        isAgreePA = sp.getBoolean("isAgreePA", false)
-        isNotificationListenersEnabledFlag = isNotificationListenersEnabled()
-        isCanDrawOverlays = Settings.canDrawOverlays(this)
+        isAgreeUA.value = sp.getBoolean("isAgreeUA", false)
+        isAgreePA.value = sp.getBoolean("isAgreePA", false)
+        isNotificationListenersEnabledFlag.value = isNotificationListenersEnabled()
+        isCanDrawOverlays.value = Settings.canDrawOverlays(this)
 
     }
 
     override fun onResume() {
         super.onResume()
         var sp = getSharedPreferences("config", MODE_PRIVATE)
-        isAgreeUA = sp.getBoolean("isAgreeUA", false)
-        isAgreePA = sp.getBoolean("isAgreePA", false)
-        isNotificationListenersEnabledFlag = isNotificationListenersEnabled()
-        isCanDrawOverlays = Settings.canDrawOverlays(this)
+        isAgreeUA.value = sp.getBoolean("isAgreeUA", false)
+        isAgreePA.value = sp.getBoolean("isAgreePA", false)
+        isNotificationListenersEnabledFlag.value = isNotificationListenersEnabled()
+        isCanDrawOverlays.value = Settings.canDrawOverlays(this)
 
 
     }
@@ -171,10 +171,10 @@ class ChecksActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var sp = getSharedPreferences("config", MODE_PRIVATE)
-        isAgreeUA = sp.getBoolean("isAgreeUA", false)
-        isAgreePA = sp.getBoolean("isAgreePA", false)
-        isNotificationListenersEnabledFlag = isNotificationListenersEnabled()
-        isCanDrawOverlays = Settings.canDrawOverlays(this)
+        isAgreeUA.value = sp.getBoolean("isAgreeUA", false)
+        isAgreePA.value = sp.getBoolean("isAgreePA", false)
+        isNotificationListenersEnabledFlag.value = isNotificationListenersEnabled()
+        isCanDrawOverlays.value = Settings.canDrawOverlays(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
@@ -235,7 +235,7 @@ class ChecksActivity : ComponentActivity() {
 
                         // 显示菜单
                            AnimatedVisibility(
-                               visible =  !isAgreePA || !isAgreeUA  || !isNotificationListenersEnabledFlag   || !isCanDrawOverlays
+                               visible =  !isAgreePA.value || !isAgreeUA.value  || !isNotificationListenersEnabledFlag.value   || !isCanDrawOverlays.value
                            ) {
                                Text(
                                    text = "第一次使用将为您检查权限",
@@ -250,27 +250,27 @@ class ChecksActivity : ComponentActivity() {
                                    ) {
                                    ItemButton(
                                        text = "用户协议",
-                                       isOK = isAgreeUA
+                                       isOK = isAgreeUA.value
                                    ) {
                                        startActivity(Intent(this@ChecksActivity, UserAgreementActivity::class.java))
                                        finish()
                                    }
                                    ItemButton(
                                        text = "隐私协议",
-                                       isOK = isAgreePA
+                                       isOK = isAgreePA.value
                                    ) {
                                        startActivity(Intent(this@ChecksActivity, PrivacyAgreementActivity::class.java))
                                        finish()
                                    }
                                    ItemButton(
                                        text = "通知监听权限",
-                                       isOK = isNotificationListenersEnabledFlag
+                                       isOK = isNotificationListenersEnabledFlag.value
                                    ) {
                                        startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"))
                                    }
                                    ItemButton(
                                        text = "悬浮窗权限",
-                                       isOK = isCanDrawOverlays
+                                       isOK = isCanDrawOverlays.value
                                    ) {
                                        startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
                                    }
@@ -278,7 +278,7 @@ class ChecksActivity : ComponentActivity() {
                            }
 
                             AnimatedVisibility(
-                                visible =  isAgreePA && isAgreeUA  && isNotificationListenersEnabledFlag   && isCanDrawOverlays
+                                visible =  isAgreePA.value && isAgreeUA.value  && isNotificationListenersEnabledFlag.value   && isCanDrawOverlays.value
                             ) {
 
                                 StartUse {

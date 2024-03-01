@@ -18,6 +18,7 @@ package kg.edu.yjut.litenote.miui.devicesSDK
   * Copyright (C) 2023-2024 HyperCeiler Contributions
 */
 
+import android.content.Context
 import android.os.Build
 import kg.edu.yjut.litenote.miui.devicesSDK.PropUtils.getProp
 
@@ -33,6 +34,15 @@ fun getHyperOSVersion(): Float = when (getProp("ro.mi.os.version.name")) {
     else -> 0f
 }
 
+
+//判断是否是横屏
+fun isLandscape(
+    context : Context
+): Boolean {
+    var w = context.resources.displayMetrics.widthPixels
+    var h = context.resources.displayMetrics.heightPixels
+    return w > h
+}
 
 fun isMoreHyperOSVersion(version: Float): Boolean {
     return getHyperOSVersion() >= version

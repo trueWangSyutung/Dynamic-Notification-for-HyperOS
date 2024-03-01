@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import kg.edu.yjut.litenote.MainActivity
 import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.miui.ToastConfig
+import kg.edu.yjut.litenote.miui.devicesSDK.isLandscape
 
 class DynamicIslandService : Service() {
 
@@ -87,7 +88,8 @@ class DynamicIslandService : Service() {
         )
         mFloatWindowManager!!.createWindow(
             config,
-            logMode
+            logMode,
+            isLandscape(applicationContext)
         )
 
         if (!logMode) {

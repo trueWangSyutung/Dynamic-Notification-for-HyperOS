@@ -186,28 +186,7 @@ class GuardNotificationListenerService : NotificationListenerService() {
                 Log.d(TAG, "功能已关闭")
             }
         }
-        else if (packageName.equals("com.tencent.qqmusic")){
-            Log.d(TAG, "extras: ${extras.getBundle("android.messages")}")
-            println(extras.toString())
 
-            var action = sp_action.getBoolean("com.android.mms", true )
-            if (action) {
-                if (extras != null) {
-                    val title = extras.getString("android.title")
-                    val content = extras.get("android.text").toString()
-                    // 读取  android.mediaSession
-                    val mediaSession = extras.get("android.mediaSession")
-                    // 读取媒体歌词
-                    val mediaLyric = extras.get("android.mediaLyric")
-                    // 读取媒体艺术家
-                    Log.d(TAG, "getMsg: ${extras.get("android.mediaArtist")}")
-                    Log.d(TAG, "getMsg: ${extras.get("android.mediaTitle")}")
-                    Log.d(TAG, "getMsg: ${extras.get("android.mediaAlbum")}")
-                    Log.d(TAG, "getMsg: ${extras.get("android.mediaLyric")}")
-                }
-            }
-
-        }
         else{
             // 如果在 supposedPackageName 中能找到
             // 则说明是其他应用的通知 supposedPackageName.contains(packageName)
