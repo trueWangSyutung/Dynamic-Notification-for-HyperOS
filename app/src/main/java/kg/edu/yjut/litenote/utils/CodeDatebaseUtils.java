@@ -95,9 +95,13 @@ public class CodeDatebaseUtils {
         return codes;
     }
     @SuppressLint("Range")
-    public static ArrayList<Code> getAllCodes(SQLiteDatabase db, int status,int page, int pageSize) {
+    public static ArrayList<Code> getAllCodes(
+            SQLiteDatabase db, int status,int page, int pageSize
+    ) {
+
         // 查询所有数据，分页,
-        String sql = "select * from code where status = " + status + " order by insert_time desc limit " + pageSize + " offset " + (page-1)*pageSize;
+        String sql = "select * from code where status = " + status +
+                " order by insert_time desc limit " + pageSize + " offset " + (page-1)*pageSize ;
         Cursor cursor = db.rawQuery(sql, null);
         // 将数据转为 ArrayList
         ArrayList<Code> codes = new ArrayList<>();
@@ -186,15 +190,16 @@ public class CodeDatebaseUtils {
 
     public static ArrayList<LogBeam> getLogsByTime(
             SQLiteDatabase db,
-            int page
+            int page,
+            int days
     ){
         // 获取当前 年月日
         Date date = new Date();
         @SuppressLint("SimpleDateFormat")
-        String now = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() +  24 * 60 * 60 * 1000));
+        String now = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() - (long) days * 24 * 60 * 60 * 1000  +  24 * 60 * 60 * 1000));
         // 获取当前时间的前7天
         @SuppressLint("SimpleDateFormat")
-        String sevenDaysAgo = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000));
+        String sevenDaysAgo = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date(date.getTime() - (long) days * 24 * 60 * 60 * 1000));
 
         String sql = "select * from logs where " +
                 "insert_time >=  \"" + sevenDaysAgo + "\" and  insert_time <=   \"" + now + "\" order by insert_time desc limit 20 offset " + (page-1)*20;

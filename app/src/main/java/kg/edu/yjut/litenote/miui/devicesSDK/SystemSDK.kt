@@ -47,3 +47,22 @@ fun isLandscape(
 fun isMoreHyperOSVersion(version: Float): Boolean {
     return getHyperOSVersion() >= version
 }
+
+fun isUnHyperOSNotices(context: Context): Boolean {
+    var sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
+    return sp.getBoolean("useHyperOSNotices", false)
+}
+
+fun closeUseHyperOSNotices(context: Context) {
+    var sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
+    var editor = sp.edit()
+    editor.putBoolean("useHyperOSNotices", true)
+    editor.apply()
+}
+
+fun openUseHyperOSNotices(context: Context) {
+    var sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
+    var editor = sp.edit()
+    editor.putBoolean("useHyperOSNotices", false)
+    editor.apply()
+}

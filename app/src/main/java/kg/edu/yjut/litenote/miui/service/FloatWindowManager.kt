@@ -101,7 +101,6 @@ class FloatWindowManager constructor(context: Context) {
             view.setOnClickListener(null)
         }
 
-
         mWindowManager.addView(view, mLayoutParams)
 
         isShowing = true

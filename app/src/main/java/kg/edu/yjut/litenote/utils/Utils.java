@@ -6,7 +6,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
+
 import kg.edu.yjut.litenote.widget.NearExpressWidget;
+
 
 public class Utils {
     @SuppressLint("NewApi")
@@ -101,4 +106,14 @@ public static int getVersionCode(Context context) {
     }
 
 
+    @NotNull
+    public static String getFormatDate(
+            @NotNull Date currDate,int days
+    ) {
+        Date date = new Date(currDate.getTime() - days * 24 * 60 * 60 * 1000);
+        @SuppressLint("SimpleDateFormat") java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date);
+
+
+    }
 }

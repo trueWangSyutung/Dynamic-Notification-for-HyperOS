@@ -22,6 +22,7 @@ import kg.edu.yjut.litenote.R
 import kg.edu.yjut.litenote.bean.ChannelInfo
 import kg.edu.yjut.litenote.miui.MiuiStringToast
 import kg.edu.yjut.litenote.miui.ToastConfig
+import kg.edu.yjut.litenote.miui.devicesSDK.isUnHyperOSNotices
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import kg.edu.yjut.litenote.utils.MyStoreTools
 import kg.edu.yjut.litenote.utils.getIcons
@@ -147,14 +148,27 @@ class GuardNotificationListenerService : NotificationListenerService() {
                         // 判断是否是横屏
                         var isLandscape = width > height
                         // 如果是横屏
-                        if (isLandscape) {
+                        if (!!isLandscape) {
                             // 发送横屏通知,横屏通知不可以使用，灵动岛
-                            PostNotice(
-                                "取件码通知",
-                                "取件码：${codeStr}，请前往${yizhanStr}取件",
-                                intent,
-                                "logo"
-                            )
+                            if (isUnHyperOSNotices(context = this)){
+                                MiuiStringToast.showStringToast(this,
+                                    ToastConfig(
+                                        "取件码：${codeStr}，请前往${yizhanStr}取件",
+                                        "#1296DB",
+                                        "dd",
+                                        6000L,
+                                        intent
+                                    )
+                                )
+                            }else{
+                                PostNotice(
+                                    "取件码通知",
+                                    "取件码：${codeStr}，请前往${yizhanStr}取件",
+                                    intent,
+                                    "logo"
+                                )
+                            }
+
 
                         } else {
                             // 发送竖屏通知，竖屏可以使用，灵动岛
@@ -199,6 +213,9 @@ class GuardNotificationListenerService : NotificationListenerService() {
                         var title = extras.getString("android.title")
                         var content = extras.getString("android.text")
                         var app = packageManager.getApplicationInfo(packageName, 0)
+
+
+
 
                         if (title == null) {
                             title = app.loadLabel(packageManager).toString()
@@ -262,19 +279,30 @@ class GuardNotificationListenerService : NotificationListenerService() {
                                         )
                                     )
                                 }else{
-                                    PostNotice(
-                                        title!!,
-                                        content!!,
-                                        intent,
-                                        supposedIconMap[packageName]!!
-                                    )
+                                    if (isUnHyperOSNotices(context = this)) {
+                                        MiuiStringToast.showStringToast(
+                                            this, ToastConfig(
+                                                "${title} : ${content}",
+                                                suppsedColorStr[packageName]!!,
+                                                supposedIconMap[packageName]!!,
+                                                supposedDuration[packageName]!!,
+                                                intent
+                                            )
+                                        )
+                                    }else {
+                                        PostNotice(
+                                            title!!,
+                                            content!!,
+                                            intent,
+                                            supposedIconMap[packageName]!!
+                                        )
+                                    }
                                 }
 
 
 
                             } else {
                                 // 发送竖屏通知，竖屏可以使用，灵动岛
-
                                 MiuiStringToast.showStringToast(
                                     this, ToastConfig(
                                         "${title} : ${content}",

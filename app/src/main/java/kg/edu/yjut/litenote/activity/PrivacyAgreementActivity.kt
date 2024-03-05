@@ -2,9 +2,11 @@ package kg.edu.yjut.litenote.activity
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,10 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.umeng.commonsdk.UMConfigure
 import kg.edu.yjut.litenote.MainActivity
 import kg.edu.yjut.litenote.activity.ui.theme.LiteNoteTheme
+import kg.edu.yjut.litenote.utils.Channael
 
 class PrivacyAgreementActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.GINGERBREAD)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,14 +71,22 @@ class PrivacyAgreementActivity : ComponentActivity() {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(20.dp),
+                                       ,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ){
                                     Button(onClick = {
                                         var sp = getSharedPreferences("config", MODE_PRIVATE)
                                         var editor = sp.edit()
-                                        editor.putBoolean("isAgreePA", true)
+                                        if (type == "update") {
+                                            editor.putBoolean("isUpdatePA", true)
+                                        }else{
+                                            editor.putBoolean("isAgreePA", true)
+
+                                            // 初始化SDK
+                                            UMConfigure.init(this@PrivacyAgreementActivity,"65e6c82fa7208a5af1b5465c",
+                                                Channael.APK.name,UMConfigure.DEVICE_TYPE_PHONE,"");
+                                        }
                                         editor.apply()
                                         startActivity(Intent(this@PrivacyAgreementActivity, MainActivity::class.java))
                                         finish()

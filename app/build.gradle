@@ -13,8 +13,8 @@ android {
         targetSdk 34
         minSdkVersion 30
         maxSdkVersion 34
-        versionCode 20015
-        versionName "v2.1.5"
+        versionCode 20050
+        versionName "v2.5.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -102,5 +102,14 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 
     // 导入本地 库
+
+
+    // 友盟基础组件库（所有友盟业务SDK都依赖基础组件库
+    implementation  'com.umeng.umsdk:common:9.6.7'// 必选
+    implementation  'com.umeng.umsdk:asms:1.8.2'// 必选
+
+    implementation 'com.umeng.umsdk:uyumao:1.1.2' // 高级运营分析功能依赖库，使用U-App卸载分析、开启反作弊能力请务必集成。common需搭配v9.6.3及以上版本，asms需搭配v1.7.0及以上版本。需更新隐私声明。
+
+    implementation 'com.umeng.umsdk:apm:1.9.5'// U-APM产品包依赖，必选
 
 }

@@ -31,6 +31,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.startForegroundService
 import com.google.gson.Gson
 import kg.edu.yjut.litenote.miui.devicesSDK.isMoreHyperOSVersion
+import kg.edu.yjut.litenote.miui.devicesSDK.isUnHyperOSNotices
 import kg.edu.yjut.litenote.miui.res.IconParams
 import kg.edu.yjut.litenote.miui.res.Left
 import kg.edu.yjut.litenote.miui.res.Right
@@ -98,14 +99,33 @@ object MiuiStringToast {
                 .setStatusBarStrongToast("show_custom_strong_toast")
                 .onCreate()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && isMoreHyperOSVersion(1f)) {
-                val service = context.getSystemService(Context.STATUS_BAR_SERVICE)
-                service.javaClass.getMethod(
-                    "setStatus",
-                    Int::class.javaPrimitiveType,
-                    String::class.java,
-                    Bundle::class.java
-                )
-                    .invoke(service, 1, "strong_toast_action", bundle)
+                if ( isUnHyperOSNotices(context)){
+                    val sp = context.getSharedPreferences("data", NotificationListenerService.MODE_PRIVATE)
+                    // 获取传递给服务的数据 通过 sharePreference
+                    sp.edit().putString("text", config.text).apply()
+                    sp.edit().putString("textColor", config.textColor).apply()
+                    sp.edit().putString("image", config.image).apply()
+                    sp.edit().putLong("duration", config.duration).apply()
+                    sp.edit().putString("intent", config.intent.toString()).apply()
+                    sp.edit().putBoolean("logMode", false).apply()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        val intent = Intent(context, DynamicIslandService::class.java)
+                        startForegroundService(context, intent)
+                    } else {
+                        val intent = Intent(context, DynamicIslandService::class.java)
+                        context.startService(intent)
+                    }
+                }else{
+                    val service = context.getSystemService(Context.STATUS_BAR_SERVICE)
+                    service.javaClass.getMethod(
+                        "setStatus",
+                        Int::class.javaPrimitiveType,
+                        String::class.java,
+                        Bundle::class.java
+                    )
+                        .invoke(service, 1, "strong_toast_action", bundle)
+                }
+
             } else {
                 val sp = context.getSharedPreferences("data", NotificationListenerService.MODE_PRIVATE)
                 // 获取传递给服务的数据 通过 sharePreference

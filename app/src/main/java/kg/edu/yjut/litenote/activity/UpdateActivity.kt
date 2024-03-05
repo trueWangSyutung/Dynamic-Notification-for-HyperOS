@@ -81,18 +81,7 @@ class UpdateActivity : ComponentActivity() {
         // 读取本地缓存
         val sharedPreferences = getSharedPreferences("infoData", Context.MODE_PRIVATE)
         val result = sharedPreferences.getString("infoData", "")
-        var isUpdate = false
-        if (result != "") {
-            var gson = Gson()
-            var root = gson.fromJson(result, HttpBeam::class.java)
-            if (root.data.version_code < this.packageManager.getPackageInfo(this.packageName, 0).versionCode) {
-                isUpdate = true
-            }
-            infoData.value = root.data
-            if (!isUpdate) {
-                return
-            }
-        }
+
 
         val currentVersionCode = packageManager.getPackageInfo(packageName, 0).versionCode
 
@@ -300,7 +289,6 @@ class UpdateActivity : ComponentActivity() {
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(10.dp)
-                                                .height(200.dp)
                                                 .clickable {
                                                 }
                                                 .background(
@@ -384,42 +372,50 @@ class UpdateActivity : ComponentActivity() {
                                                 // 发起OkHttp请求,下载apk,保存到本地 download目录
                                                 val url = newInfoData.value?.apk_url
                                                 // 获取 download 目录
-
-                                                var path = "download/hyperos"
-                                                DownloadUtil.get().download(url!!, path, object : DownloadUtil.OnDownloadListener {
-                                                    override fun onDownloadSuccess() {
-                                                        //成功
-                                                        runOnUiThread {
-                                                            buttonIndex.value = 3
-                                                            // 保存更新信息
-                                                            val sharedPreferences = getSharedPreferences("infoData", Context.MODE_PRIVATE)
-                                                            val editor = sharedPreferences.edit()
-                                                            var gson = Gson()
-                                                            editor.putString("updateInfo", gson.toJson(newInfoData.value))
-                                                            editor.putString("updatePath", path)
-
-                                                            editor.apply()
+                                                // 浏览器打开下载地址
+                                                var intent = Intent()
+                                                intent.action = "android.intent.action.VIEW"
+                                                intent.data = android.net.Uri.parse(url)
+                                                startActivity(intent)
 
 
-                                                        }
-                                                    }
-
-                                                    override fun onDownloading(progress: Int) {
-                                                        //进度
-                                                        runOnUiThread {
-                                                            percent.value = progress.toFloat()
-                                                        }
-                                                    }
-
-                                                    override fun onDownloadFailed() {
-                                                        //失败
-                                                        runOnUiThread {
-                                                            Toast.makeText(this@UpdateActivity, "下载失败", Toast.LENGTH_SHORT).show()
-                                                            buttonIndex.value = 1
-                                                        }
-                                                    }
-                                                })
-
+                                                //var path = "download/hyperos"
+                                                /**
+                                                 * DownloadUtil.get().download(url!!, path, object : DownloadUtil.OnDownloadListener {
+                                                 *                                                     override fun onDownloadSuccess() {
+                                                 *                                                         //成功
+                                                 *                                                         runOnUiThread {
+                                                 *                                                             buttonIndex.value = 3
+                                                 *                                                             // 保存更新信息
+                                                 *                                                             val sharedPreferences = getSharedPreferences("infoData", Context.MODE_PRIVATE)
+                                                 *                                                             val editor = sharedPreferences.edit()
+                                                 *                                                             var gson = Gson()
+                                                 *                                                             editor.putString("updateInfo", gson.toJson(newInfoData.value))
+                                                 *                                                             editor.putString("updatePath", path)
+                                                 *
+                                                 *                                                             editor.apply()
+                                                 *
+                                                 *
+                                                 *                                                         }
+                                                 *                                                     }
+                                                 *
+                                                 *                                                     override fun onDownloading(progress: Int) {
+                                                 *                                                         //进度
+                                                 *                                                         runOnUiThread {
+                                                 *                                                             percent.value = progress.toFloat()
+                                                 *                                                         }
+                                                 *                                                     }
+                                                 *
+                                                 *                                                     override fun onDownloadFailed() {
+                                                 *                                                         //失败
+                                                 *                                                         runOnUiThread {
+                                                 *                                                             Toast.makeText(this@UpdateActivity, "下载失败", Toast.LENGTH_SHORT).show()
+                                                 *                                                             buttonIndex.value = 1
+                                                 *                                                         }
+                                                 *                                                     }
+                                                 *                                                 })
+                                                 *
+                                                 */
 
                                             }else if(buttonIndex.value == 3){
                                                 // 安装

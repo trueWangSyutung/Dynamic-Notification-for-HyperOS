@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
+import com.umeng.commonsdk.UMConfigure
 import kg.edu.yjut.litenote.activity.ChecksActivity
 import kg.edu.yjut.litenote.activity.MyHomeActivity
 import kg.edu.yjut.litenote.activity.UpdateActivity
@@ -23,6 +24,7 @@ import kg.edu.yjut.litenote.helper.RegexMangerHelper
 import kg.edu.yjut.litenote.miui.MiuiStringToast
 import kg.edu.yjut.litenote.miui.ToastConfig
 import kg.edu.yjut.litenote.service.GuardNotificationListenerService
+import kg.edu.yjut.litenote.utils.Channael
 import kg.edu.yjut.litenote.utils.CodeDatebaseUtils
 import okhttp3.Call
 import okhttp3.OkHttpClient
@@ -75,20 +77,15 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
                         if (root.msg == "success") {
                             // 如果有更新
-                            var pendingIntent = PendingIntent.getActivity(
-                                context,
-                                0,
-                                Intent(context, UpdateActivity::class.java),
-                                PendingIntent.FLAG_UPDATE_CURRENT
-                            )
+
 
                             MiuiStringToast.showStringToast(
                                 this, ToastConfig(
-                                    "有新版本",
+                                    "有新版本，请去检查更新吧",
                                     "#1296DB",
                                     "dd",
                                     6000L,
-                                    pendingIntent
+                                    null
                                 )
                             )
                         }else{
@@ -116,7 +113,9 @@ class MainActivity : AppCompatActivity() {
 
         var sp = getSharedPreferences("config", Context.MODE_PRIVATE)
         var isFirst = sp.getBoolean("isFirst", true)
-
+        UMConfigure.preInit(this@MainActivity,"65e6c82fa7208a5af1b5465c",
+            Channael.APK.name
+        );
         if (isFirst){
 
             startActivity(Intent(this, ChecksActivity::class.java))
@@ -181,6 +180,10 @@ class MainActivity : AppCompatActivity() {
             println(out)
             Log.d("MainActivity", "onCreate: $out")
 
+            UMConfigure.init(this@MainActivity,"65e6c82fa7208a5af1b5465c",
+                Channael.APK.name,UMConfigure.DEVICE_TYPE_PHONE,"");
+
+            checkUpdate(this)
 
             startActivity(Intent(this, MyHomeActivity::class.java))
             finish()
