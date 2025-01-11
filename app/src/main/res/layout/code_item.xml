@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/code_item"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:layout_height="60dp">
+
+    <CheckBox
+        android:id="@+id/code_item_checkbox"
+        android:layout_width="wrap_content"
+        android:buttonTint="@color/white"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/code_item_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+
+        android:text="取件码 （测试驿站）"/>
+
+
+
+
+</LinearLayout>

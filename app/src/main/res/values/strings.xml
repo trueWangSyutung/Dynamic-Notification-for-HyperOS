@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">灵动通知</string>
+    <string name="title_activity_about">AboutActivity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+</resources>
