@@ -194,7 +194,7 @@ fun EasyButton(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { 
+            .clickable {
                 onClick()
             }
             .padding(vertical = 8.dp),
@@ -227,3 +227,27 @@ fun EasySwitchButton(
     }
 
 }
+@Composable
+fun EasyTextButton(
+    text: String =  "按钮",
+    text2: String = "按钮2",
+    enabled: Boolean = true,
+    onClick : () -> Unit )
+{
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = text)
+            Button(
+                enabled = enabled,
+                onClick = { onClick()}
+            ) {
+                Text(text = text2)
+            }
+        }
+    }
+

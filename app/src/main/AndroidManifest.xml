@@ -10,9 +10,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
+
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:allowBackup="true"
@@ -24,6 +29,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DynamicNotification"
         tools:targetApi="31">
+
+
+        <activity
+            android:name=".MoreFunctionActivity"
+            android:exported="false"
+            android:label="@string/title_activity_more_function"
+            android:theme="@style/Theme.DynamicNotification" />
+        <activity
+            android:name=".HisActivity"
+            android:exported="false"
+            android:label="@string/title_activity_his"
+            android:theme="@style/Theme.DynamicNotification" />
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
@@ -72,7 +89,37 @@
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.DynamicNotification" />
+        <receiver
+            android:name=".receive.MessageReciever"
+            android:enabled="true"
+            android:exported="true" />
 
+        <service
+            android:name=".service.MessageService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="specialUse"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="org.anymobile.test.service.IMICHAT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="用于监听短信提取取件码" />
+        </service>
+        <service
+            android:name=".service.FocusService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="specialUse"
+            android:label="取件码服务">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="用于显示取件码" />
+        </service>
         <service
             android:name=".service.GuardNotificationListenerService"
             android:enabled="true"

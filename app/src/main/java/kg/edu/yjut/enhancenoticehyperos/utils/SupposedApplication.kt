@@ -151,6 +151,7 @@ fun getIcons(str:String) : Int{
         "bili" -> R.drawable.bili
         "logo" -> R.drawable.logo
         "buss" -> R.drawable.buss
+        "jieguan" -> R.drawable.ic_launcher_foreground
         else -> R.drawable.ic_kuaidi_foreground
     }
     return icon

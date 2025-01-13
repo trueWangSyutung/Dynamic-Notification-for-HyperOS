@@ -53,4 +53,25 @@ object Configs {
     }
 
 
+    // 检查是否接管系统通知
+    fun checkInterceptSystemNotices(context: Context) : Boolean {
+        val sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
+        return sp.getBoolean("interceptSystemNotices", false)
+    }
+    fun setInterceptSystemNotices(context: Context, interceptSystemNotices: Boolean) {
+        val sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
+        sp.edit().putBoolean("interceptSystemNotices", interceptSystemNotices).apply()
+    }
+
+    fun setSettingItems(context: Context, label : String, value: Boolean) {
+        val sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
+        sp.edit().putBoolean(label, value).apply()
+
+    }
+    fun getSettingItems(context: Context, label : String, defaultValue:Boolean) : Boolean {
+        val sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
+        return sp.getBoolean(label, defaultValue)
+    }
+
+
 }

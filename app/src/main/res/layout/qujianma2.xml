@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@drawable/island"
+    android:layout_gravity="center_vertical"
+    android:padding="30dp"
+    android:orientation="horizontal"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/spaceArea"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/contentqjmShow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="您收到快递"
+            android:textSize="15dp"
+            android:textColor="@color/black"
+            />
+        <TextView
+            android:id="@+id/contentqjmText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="21-34-1023"
+            android:textSize="30dp"
+            android:textColor="@color/black"
+            />
+        <TextView
+            android:id="@+id/contentqjmKuaidi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="京东快递"
+            android:textSize="15dp"
+            android:textColor="@color/black"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/copy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/island"
+            android:layout_weight="5"
+            android:src="@drawable/baseline_content_copy_24"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical" />
+
+        <ImageView
+            android:id="@+id/save"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/island"
+
+            android:layout_weight="5"
+            android:src="@drawable/baseline_content_copy_24"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+
+
+
+
+
+
+
+
+</LinearLayout>

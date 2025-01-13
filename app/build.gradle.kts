@@ -1,3 +1,9 @@
+val vc = 40001
+val isBeta = true
+val vn4 = "1.0.1."
+val vn = vn4 + vc.toString() + if (isBeta) ".dev" else ""
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -13,8 +19,8 @@ android {
         applicationId = "kg.edu.yjut.enhancenoticehyperos"
         minSdk = 26
         targetSdk = 35
-        versionCode = 40000
-        versionName = "1.0.1.40000.dev"
+        versionCode = vc
+        versionName = vn
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -46,12 +46,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kg.edu.yjut.enhancenoticehyperos.base.CodeDatabase
 import kg.edu.yjut.enhancenoticehyperos.ui.theme.DynamicNotificationTheme
 import kg.edu.yjut.enhancenoticehyperos.utils.getDarkModeBackgroundColor
 import kg.edu.yjut.enhancenoticehyperos.utils.getDarkModeTextColor
 import kg.edu.yjut.enhancenoticehyperos.service.GuardNotificationListenerService
+import kg.edu.yjut.enhancenoticehyperos.service.MessageService
 import kg.edu.yjut.enhancenoticehyperos.utils.Configs
 import kg.edu.yjut.enhancenoticehyperos.widget.EasyDialog
+import kotlin.concurrent.thread
 
 class MainActivity : ComponentActivity() {
     val TAG = "MainActivity"
@@ -114,7 +117,27 @@ class MainActivity : ComponentActivity() {
 
             }
         }
+        if (Configs.getSettingItems(this@MainActivity,"yanzhengma",false)) {
+            startForegroundService(Intent(this, MessageService::class.java))
+        } else {
+            // 如果服务正在运行，则停止服务
+            if (isServiceRunning2()) {
+                stopService(Intent(this, MessageService::class.java))
+            }
 
+
+        }
+
+    }
+    private fun isServiceRunning2(): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as  (ActivityManager);
+        val serviceClass = MessageService::class.java;
+        for ( service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true;
+            }
+        }
+        return false;
     }
     private fun isServiceRunning(): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as  (ActivityManager);
@@ -136,6 +159,13 @@ class MainActivity : ComponentActivity() {
         if (isAgreed.value) {
             initYubei()
             initService()
+        }
+        thread {
+            val db = CodeDatabase.getDatabase(this@MainActivity)
+            db.noticeDao().deleteNoticeBeforeTime(
+                System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 7
+            )
+            // 删除7天前的通知
         }
 
 
@@ -576,6 +606,80 @@ class MainActivity : ComponentActivity() {
 
                         }
 
+
+                        // 历史记录
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 25.dp, vertical = 5.dp)
+
+                                .fillMaxWidth()
+                                .clickable {
+                                    val intent = Intent(
+                                        this@MainActivity,
+                                        HisActivity::class.java
+                                    )
+                                    startActivity(intent)
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                        ){
+                            Icon(
+                                    painter = painterResource(id = R.drawable.baseline_history_24) ,
+                                contentDescription = null,
+                                modifier = Modifier.size(36.dp).padding(end = 10.dp),
+                                tint = getDarkModeTextColor(this@MainActivity)
+                            )
+                            Text(
+                                "历史记录",
+                                color = getDarkModeTextColor(this@MainActivity),
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        vertical = 15.dp
+                                    ),
+                                maxLines = 1,
+                                textAlign = TextAlign.Start,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        // 更多功能
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 25.dp, vertical = 5.dp)
+
+                                .fillMaxWidth()
+                                .clickable {
+                                    val intent = Intent(
+                                        this@MainActivity,
+                                        MoreFunctionActivity::class.java
+                                    )
+                                    startActivity(intent)
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                        ){
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_apps_24) ,
+                                contentDescription = null,
+                                modifier = Modifier.size(36.dp).padding(end = 10.dp),
+                                tint = getDarkModeTextColor(this@MainActivity)
+                            )
+                            Text(
+                                "更多功能",
+                                color = getDarkModeTextColor(this@MainActivity),
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        vertical = 15.dp
+                                    ),
+                                maxLines = 1,
+                                textAlign = TextAlign.Start,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
 
                         // 隐私协议
                         Row(

@@ -39,3 +39,4 @@ _版本：v1.0.0_
 [![Stargazers over time](https://starchart.cc/trueWangSyutung/Dynamic-Notification-for-HyperOS.svg?variant=adaptive)](https://starchart.cc/trueWangSyutung/Dynamic-Notification-for-HyperOS)
 
 [![Sparkline](https://stars.medv.io/trueWangSyutung/Dynamic-Notification-for-HyperOS.svg)](https://stars.medv.io/trueWangSyutung/Dynamic-Notification-for-HyperOS)
+z

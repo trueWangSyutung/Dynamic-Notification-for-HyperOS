@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import kg.edu.yjut.enhancenoticehyperos.MainActivity
 import kg.edu.yjut.enhancenoticehyperos.R
+import kg.edu.yjut.enhancenoticehyperos.base.CodeDatabase
 import kg.edu.yjut.enhancenoticehyperos.utils.MyStoreTools
 import kg.edu.yjut.enhancenoticehyperos.utils.getIcons
 import kg.edu.yjut.enhancenoticehyperos.utils.getSystemPackages
@@ -28,11 +29,13 @@ import kg.edu.yjut.enhancenoticehyperos.utils.supposedPackageName
 import kg.edu.yjut.enhancenoticehyperos.utils.suppsedColorStr
 
 import kg.edu.yjut.enhancenoticehyperos.bean.ChannelInfo
+import kg.edu.yjut.enhancenoticehyperos.entity.NoticeHistory
 import kg.edu.yjut.enhancenoticehyperos.miui.MiuiStringToast
 import kg.edu.yjut.enhancenoticehyperos.miui.ToastConfig
 import kg.edu.yjut.enhancenoticehyperos.miui.devicesSDK.isUnHyperOSNotices
 import kg.edu.yjut.enhancenoticehyperos.utils.Configs
 import kg.edu.yjut.enhancenoticehyperos.utils.SoftwareMode
+import kotlin.concurrent.thread
 
 import kotlin.random.Random
 
@@ -112,7 +115,29 @@ class GuardNotificationListenerService : NotificationListenerService() {
                     var channelOpen = sp_action.getBoolean("${packageName}_${channel}", true)
                     if (channelOpen) {
                         // 取消该通知的 在屏幕上弹出
-                        cancelNotification(sbn.key)
+                        if (Configs.checkInterceptSystemNotices(context = this)) {
+                            cancelNotification(sbn.key)
+                            thread {
+                                CodeDatabase.getDatabase(this).noticeDao().insertNotice(
+                                    notice = NoticeHistory(
+                                        id = 0,
+                                        packageName=packageName,
+                                        title = title.toString(),
+                                        content = content.toString(),
+                                        chennel = channel,
+                                        sendTime = System.currentTimeMillis(),
+                                    )
+                                )
+                            }
+                            postNotice(
+                                title = title,
+                                content = content,
+                                from = app.loadLabel(packageManager).toString(),
+                                intent = intent!!,
+                                icon = supposedIconMap[packageName]!!,
+                            )
+
+                        }
 
                         // 获取通知时间
                         val postTime = sbn.postTime
@@ -176,7 +201,8 @@ class GuardNotificationListenerService : NotificationListenerService() {
                                 )
                             )
                         }
-                    }else{
+                    }
+                    else{
                         Log.d(TAG, "通道已关闭")
 
                     }
@@ -234,7 +260,29 @@ class GuardNotificationListenerService : NotificationListenerService() {
                         var channelOpen = sp_action.getBoolean("${packageName}_${channel}", true)
                         if (channelOpen) {
                             // 取消该通知的 在屏幕上弹出
-                            cancelNotification(sbn.key)
+                            if (Configs.checkInterceptSystemNotices(context = this)) {
+                                cancelNotification(sbn.key)
+                                thread {
+                                    CodeDatabase.getDatabase(this).noticeDao().insertNotice(
+                                        notice = NoticeHistory(
+                                            id = 0,
+                                            packageName=packageName,
+                                            title = title.toString(),
+                                            content = content.toString(),
+                                            chennel = channel,
+                                            sendTime = System.currentTimeMillis(),
+                                        )
+                                    )
+                                }
+                                postNotice(
+                                    title = title,
+                                    content = content,
+                                    from = app.loadLabel(packageManager).toString(),
+                                    intent = intent!!,
+                                    icon = "jieguan",
+                                )
+
+                            }
                             // 目的是 接管通知，但不弹出，而是在屏幕上显示一个自定义的视图。
 
                             // 获取通知时间
@@ -309,20 +357,21 @@ class GuardNotificationListenerService : NotificationListenerService() {
 
     // 发送焦点通知，告诉用户有新的快递需要取
     @SuppressLint("ObsoleteSdkInt")
-    fun PostNotice(
+    fun postNotice(
         title : String,
         content: String,
+        from : String,
         intent: PendingIntent?,
         icon : String,
 
         ){
         // 通知栏显示
         var id = "kg.edu.yjut.enhancenoticehyperos.service.ZhuanFaService"
-        var name = "横屏通知"
+        var name = "通知接管"
         var description = "横屏通知"
 
         var notification: Notification = NotificationCompat.Builder(this, id)
-            .setContentTitle(title)
+            .setContentTitle("接管来自" + from + "的消息：$title")
             .setContentText(content)
             .setWhen(System.currentTimeMillis())
             .setSmallIcon(getIcons(icon))

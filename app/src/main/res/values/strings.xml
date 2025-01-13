@@ -2,4 +2,6 @@
     <string name="app_name">灵动通知</string>
     <string name="title_activity_about">AboutActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_his">HisActivity</string>
+    <string name="title_activity_more_function">MoreFunctionActivity</string>
 </resources>

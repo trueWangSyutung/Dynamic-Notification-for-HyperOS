@@ -141,6 +141,25 @@ class SettingsActivity : ComponentActivity() {
                                         startActivity(intent)
                                     }
                                 }
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Column {
+                                    InfoItem2(
+                                        "接管系统通知",
+                                        "启用后，所有通知将会被拦截，并由灵动通知服务代为发送。\n关闭后，灵动岛和系统通知都会显示"
+                                    )
+                                    val enabled = remember {
+                                        mutableStateOf(Configs.checkInterceptSystemNotices(this@SettingsActivity))
+                                    }
+                                    EasySwitchButton(
+                                        text = "启用接管系统通知",
+                                        onCheckedChange = {
+                                            Configs.setInterceptSystemNotices(this@SettingsActivity, it)
+                                            enabled.value = it
+                                        },
+                                        isChecked = enabled.value,
+
+                                        )
+                                }
                             }
 
 
